@@ -12,7 +12,6 @@ interface Props {
 export default function ExpressionDisplay({ tokens, cursorPos, result, target }: Props) {
   const [cursorVisible, setCursorVisible] = useState(true);
 
-  // Blink the cursor every 530ms
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => {
     setCursorVisible(true);
@@ -33,40 +32,37 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target }:
     </Text>
   );
 
+  let exprContent: React.ReactNode;
   if (tokens.length === 0) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.exprRow}>
-          {cursor}
-          <Text style={styles.placeholder}>Tap numbers and operators...</Text>
-        </View>
-      </View>
+    exprContent = (
+      <>
+        {cursor}
+        <Text style={styles.placeholder}>Tap numbers and operators...</Text>
+      </>
     );
+  } else {
+    const parts: React.ReactNode[] = [];
+    tokens.forEach((token, index) => {
+      if (index === cursorPos) parts.push(cursor);
+      parts.push(
+        <Text key={index} style={styles.token}>{token.display}</Text>
+      );
+      if (index < tokens.length - 1 || cursorPos !== tokens.length) {
+        parts.push(<Text key={`sp-${index}`} style={styles.space}> </Text>);
+      }
+    });
+    if (cursorPos === tokens.length) parts.push(cursor);
+    exprContent = parts;
   }
-
-  const parts: React.ReactNode[] = [];
-  tokens.forEach((token, index) => {
-    if (index === cursorPos) parts.push(cursor);
-    parts.push(
-      <Text key={index} style={styles.token}>{token.display}</Text>
-    );
-    // Add a thin space between tokens for readability
-    if (index < tokens.length - 1 || cursorPos !== tokens.length) {
-      parts.push(<Text key={`sp-${index}`} style={styles.space}> </Text>);
-    }
-  });
-  if (cursorPos === tokens.length) parts.push(cursor);
 
   return (
     <View style={styles.container}>
       <View style={styles.exprRow}>
-        {parts}
+        {exprContent}
       </View>
-      {result !== null && (
-        <Text style={[styles.result, { color: resultColor }]}>
-          = {result}
-        </Text>
-      )}
+      <Text style={[styles.result, { color: resultColor }]}>
+        {result !== null ? `= ${result}` : ' '}
+      </Text>
     </View>
   );
 }
@@ -76,9 +72,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a2e',
     borderRadius: 12,
     padding: 14,
-    minHeight: 70,
     marginBottom: 16,
-    justifyContent: 'center',
   },
   exprRow: {
     flexDirection: 'row',
