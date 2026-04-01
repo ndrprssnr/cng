@@ -10,7 +10,6 @@ import OperatorButton from '../components/OperatorButton';
 import ActionButtons from '../components/ActionButtons';
 import ResultBanner from '../components/ResultBanner';
 
-const OPERATORS: Operator[] = ['+', '-', '×', '÷', '(', ')'];
 
 export default function GameScreen() {
   const { state, dispatch } = useGameState();
@@ -42,7 +41,7 @@ export default function GameScreen() {
           </View>
 
           <View style={styles.operatorsRow}>
-            {OPERATORS.map(op => (
+            {(['+', '-', '×', '÷'] as Operator[]).map(op => (
               <OperatorButton
                 key={op}
                 operator={op}
@@ -50,6 +49,16 @@ export default function GameScreen() {
                 disabled={state.phase === 'submitted'}
               />
             ))}
+            <View style={styles.parenGroup}>
+              {(['(', ')'] as Operator[]).map(op => (
+                <OperatorButton
+                  key={op}
+                  operator={op}
+                  onPress={o => dispatch({ type: 'TAP_OPERATOR', operator: o })}
+                  disabled={state.phase === 'submitted'}
+                />
+              ))}
+            </View>
           </View>
 
           <ActionButtons
@@ -103,5 +112,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexWrap: 'wrap',
     marginBottom: 8,
+  },
+  parenGroup: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
   },
 });
