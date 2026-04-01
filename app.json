@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "cdc",
+    "name": "Countdown",
     "slug": "cdc",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,7 +21,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "org.ateam.countdown"
     },
     "web": {
       "favicon": "./assets/favicon.png"
