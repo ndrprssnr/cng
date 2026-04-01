@@ -40,26 +40,28 @@ export default function GameScreen() {
             ))}
           </View>
 
-          <View style={styles.operatorsRow}>
-            {(['+', '-', '×', '÷'] as Operator[]).map(op => (
-              <OperatorButton
-                key={op}
-                operator={op}
-                onPress={o => dispatch({ type: 'TAP_OPERATOR', operator: o })}
-                disabled={state.phase === 'submitted'}
-              />
-            ))}
-            <View style={styles.parenGroup}>
-              {(['(', ')'] as Operator[]).map(op => (
+          {state.phase === 'playing' && (
+            <View style={styles.operatorsRow}>
+              {(['+', '-', '×', '÷'] as Operator[]).map(op => (
                 <OperatorButton
                   key={op}
                   operator={op}
                   onPress={o => dispatch({ type: 'TAP_OPERATOR', operator: o })}
-                  disabled={state.phase === 'submitted'}
+                  disabled={false}
                 />
               ))}
+              <View style={styles.parenGroup}>
+                {(['(', ')'] as Operator[]).map(op => (
+                  <OperatorButton
+                    key={op}
+                    operator={op}
+                    onPress={o => dispatch({ type: 'TAP_OPERATOR', operator: o })}
+                    disabled={false}
+                  />
+                ))}
+              </View>
             </View>
-          </View>
+          )}
 
           <ActionButtons
             onClear={() => dispatch({ type: 'CLEAR' })}
