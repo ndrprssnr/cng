@@ -28,6 +28,7 @@ export interface GameState {
   phase: 'playing' | 'submitted';
   tiles: NumberTileData[];
   target: number;
+  exactSolvable: boolean;            // true if an exact solution exists for this puzzle
   expression: ExpressionToken[];
   cursorPos: number;     // insertion point: 0 = before first token, expression.length = end
   result: number | null; // live-evaluated value, recomputed in reducer

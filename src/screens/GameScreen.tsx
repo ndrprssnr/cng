@@ -20,7 +20,7 @@ export default function GameScreen() {
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
-          <TargetDisplay target={state.target} />
+          <TargetDisplay target={state.target} exactSolvable={state.exactSolvable} />
 
           <ExpressionDisplay
             tokens={state.expression}

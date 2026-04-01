@@ -7,10 +7,13 @@ import { solve } from '../logic/solver';
 
 function createInitialState(): GameState {
   const numbers = generateNumbers();
+  const target = generateTarget();
+  const solution = solve(numbers, target);
   return {
     phase: 'playing',
     tiles: buildTiles(numbers),
-    target: generateTarget(),
+    target,
+    exactSolvable: solution !== null && solution.result === target,
     expression: [],
     cursorPos: 0,
     result: null,

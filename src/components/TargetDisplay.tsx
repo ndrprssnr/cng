@@ -3,13 +3,15 @@ import { View, Text, StyleSheet } from 'react-native';
 
 interface Props {
   target: number;
+  exactSolvable: boolean;
 }
 
-export default function TargetDisplay({ target }: Props) {
+export default function TargetDisplay({ target, exactSolvable }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>TARGET</Text>
       <Text style={styles.target}>{target}</Text>
+      <View style={[styles.dot, exactSolvable ? styles.dotSolvable : styles.dotUnsolvable]} />
     </View>
   );
 }
@@ -40,5 +42,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffffff',
     lineHeight: 72,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginTop: 6,
+  },
+  dotSolvable: {
+    backgroundColor: '#69f0ae',  // soft green
+  },
+  dotUnsolvable: {
+    backgroundColor: 'rgba(255,100,100,0.35)',  // soft red
   },
 });
