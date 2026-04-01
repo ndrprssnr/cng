@@ -12,6 +12,7 @@ function createInitialState(): GameState {
     tiles: buildTiles(numbers),
     target: generateTarget(),
     expression: [],
+    cursorPos: 0,
     result: null,
     score: null,
     bestSolution: null,
@@ -30,11 +31,17 @@ function reducer(state: GameState, action: GameAction): GameState {
         tileId: tile.id,
         value: tile.value,
       };
-      const newExpression = [...state.expression, token];
+      const newExpression = [
+        ...state.expression.slice(0, state.cursorPos),
+        token,
+        ...state.expression.slice(state.cursorPos),
+      ];
+      const newCursor = state.cursorPos + 1;
       return {
         ...state,
         tiles: state.tiles.map(t => t.id === action.tileId ? { ...t, used: true } : t),
         expression: newExpression,
+        cursorPos: newCursor,
         result: getLiveResult(newExpression),
       };
     }
@@ -46,25 +53,35 @@ function reducer(state: GameState, action: GameAction): GameState {
         display: action.operator,
         operator: action.operator,
       };
-      const newExpression = [...state.expression, token];
+      const newExpression = [
+        ...state.expression.slice(0, state.cursorPos),
+        token,
+        ...state.expression.slice(state.cursorPos),
+      ];
+      const newCursor = state.cursorPos + 1;
       return {
         ...state,
         expression: newExpression,
+        cursorPos: newCursor,
         result: getLiveResult(newExpression),
       };
     }
 
     case 'BACKSPACE': {
-      if (state.expression.length === 0 || state.phase === 'submitted') return state;
-      const last = state.expression[state.expression.length - 1];
-      const newExpression = state.expression.slice(0, -1);
-      const newTiles = last.type === 'number' && last.tileId
-        ? state.tiles.map(t => t.id === last.tileId ? { ...t, used: false } : t)
+      if (state.cursorPos === 0 || state.phase === 'submitted') return state;
+      const tokenToRemove = state.expression[state.cursorPos - 1];
+      const newExpression = [
+        ...state.expression.slice(0, state.cursorPos - 1),
+        ...state.expression.slice(state.cursorPos),
+      ];
+      const newTiles = tokenToRemove.type === 'number' && tokenToRemove.tileId
+        ? state.tiles.map(t => t.id === tokenToRemove.tileId ? { ...t, used: false } : t)
         : state.tiles;
       return {
         ...state,
         tiles: newTiles,
         expression: newExpression,
+        cursorPos: state.cursorPos - 1,
         result: getLiveResult(newExpression),
       };
     }
@@ -75,8 +92,16 @@ function reducer(state: GameState, action: GameAction): GameState {
         ...state,
         tiles: state.tiles.map(t => ({ ...t, used: false })),
         expression: [],
+        cursorPos: 0,
         result: null,
       };
+    }
+
+    case 'MOVE_CURSOR': {
+      if (state.phase === 'submitted') return state;
+      const next = state.cursorPos + action.delta;
+      if (next < 0 || next > state.expression.length) return state;
+      return { ...state, cursorPos: next };
     }
 
     case 'SUBMIT': {

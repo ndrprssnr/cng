@@ -29,6 +29,7 @@ export interface GameState {
   tiles: NumberTileData[];
   target: number;
   expression: ExpressionToken[];
+  cursorPos: number;     // insertion point: 0 = before first token, expression.length = end
   result: number | null; // live-evaluated value, recomputed in reducer
   score: ScoreResult | null;
   bestSolution: BestSolution | null; // filled after submit
@@ -39,5 +40,6 @@ export type GameAction =
   | { type: 'TAP_OPERATOR'; operator: Operator }
   | { type: 'BACKSPACE' }
   | { type: 'CLEAR' }
+  | { type: 'MOVE_CURSOR'; delta: -1 | 1 }
   | { type: 'SUBMIT' }
   | { type: 'NEW_GAME' };

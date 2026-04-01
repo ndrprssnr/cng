@@ -6,7 +6,11 @@ interface Props {
   onBackspace: () => void;
   onSubmit: () => void;
   onNewGame: () => void;
+  onCursorLeft: () => void;
+  onCursorRight: () => void;
   submitEnabled: boolean;
+  cursorAtStart: boolean;
+  cursorAtEnd: boolean;
   phase: 'playing' | 'submitted';
 }
 
@@ -15,7 +19,11 @@ export default function ActionButtons({
   onBackspace,
   onSubmit,
   onNewGame,
+  onCursorLeft,
+  onCursorRight,
   submitEnabled,
+  cursorAtStart,
+  cursorAtEnd,
   phase,
 }: Props) {
   if (phase === 'submitted') {
@@ -29,11 +37,27 @@ export default function ActionButtons({
   return (
     <View style={styles.container}>
       <View style={styles.topRow}>
+        <TouchableOpacity
+          style={[styles.secondary, cursorAtStart && styles.dimmed]}
+          onPress={onCursorLeft}
+          disabled={cursorAtStart}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.secondaryText}>◀</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.secondary, cursorAtEnd && styles.dimmed]}
+          onPress={onCursorRight}
+          disabled={cursorAtEnd}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.secondaryText}>▶</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.secondary} onPress={onBackspace} activeOpacity={0.8}>
-          <Text style={styles.secondaryText}>⌫ Back</Text>
+          <Text style={styles.secondaryText}>⌫</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.secondary} onPress={onClear} activeOpacity={0.8}>
-          <Text style={styles.secondaryText}>✕ Clear</Text>
+          <Text style={styles.secondaryText}>✕</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity
@@ -55,7 +79,7 @@ const styles = StyleSheet.create({
   },
   topRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   secondary: {
     flex: 1,
@@ -64,9 +88,12 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
   },
+  dimmed: {
+    opacity: 0.3,
+  },
   secondaryText: {
     color: '#eceff1',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
   submit: {

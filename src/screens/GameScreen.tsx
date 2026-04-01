@@ -25,6 +25,7 @@ export default function GameScreen() {
 
           <ExpressionDisplay
             tokens={state.expression}
+            cursorPos={state.cursorPos}
             result={state.result}
             target={state.target}
           />
@@ -56,7 +57,11 @@ export default function GameScreen() {
             onBackspace={() => dispatch({ type: 'BACKSPACE' })}
             onSubmit={() => dispatch({ type: 'SUBMIT' })}
             onNewGame={() => dispatch({ type: 'NEW_GAME' })}
+            onCursorLeft={() => dispatch({ type: 'MOVE_CURSOR', delta: -1 })}
+            onCursorRight={() => dispatch({ type: 'MOVE_CURSOR', delta: 1 })}
             submitEnabled={submitEnabled}
+            cursorAtStart={state.cursorPos === 0}
+            cursorAtEnd={state.cursorPos === state.expression.length}
             phase={state.phase}
           />
 
