@@ -28,14 +28,18 @@ export default function GameScreen() {
             target={state.target}
           />
 
-          <View style={styles.tilesRow}>
-            {state.tiles.map(tile => (
-              <NumberTile
-                key={tile.id}
-                tile={tile}
-                onPress={id => dispatch({ type: 'TAP_TILE', tileId: id })}
-                disabled={tile.used || state.phase === 'submitted'}
-              />
+          <View style={styles.tilesGrid}>
+            {[0, 1].map(row => (
+              <View key={row} style={styles.tilesRow}>
+                {state.tiles.slice(row * 3, row * 3 + 3).map(tile => (
+                  <NumberTile
+                    key={tile.id}
+                    tile={tile}
+                    onPress={id => dispatch({ type: 'TAP_TILE', tileId: id })}
+                    disabled={tile.used || state.phase === 'submitted'}
+                  />
+                ))}
+              </View>
             ))}
           </View>
 
@@ -122,11 +126,13 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 30,
   },
+  tilesGrid: {
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   tilesRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    marginBottom: 8,
+    flexWrap: 'nowrap',
   },
   operatorsRow: {
     flexDirection: 'row',
