@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { useReducer, useEffect } from 'react';
 import { GameState, GameAction, ExpressionToken } from '../types/game';
 import { generateNumbers, generateTarget, buildTiles } from '../logic/gameSetup';
 import { getLiveResult, evaluateExpression } from '../logic/expressionEngine';
@@ -7,13 +7,13 @@ import { solve } from '../logic/solver';
 
 function createInitialState(): GameState {
   const numbers = generateNumbers();
-  const target = generateTarget();
-  const solution = solve(numbers, target);
   return {
     phase: 'playing',
+    solving: true,
     tiles: buildTiles(numbers),
-    target,
-    exactSolvable: solution !== null && solution.result === target,
+    target: generateTarget(),
+    exactSolvable: null,
+    precomputedSolution: null,
     expression: [],
     cursorPos: 0,
     result: null,
@@ -112,10 +112,7 @@ function reducer(state: GameState, action: GameAction): GameState {
       const result = evaluateExpression(state.expression);
       if (result === null) return state;
       const score = computeScore(result, state.target);
-      const numbers = state.tiles.map(t => t.value);
-      const bestSolution = score.label === 'exact'
-        ? null
-        : solve(numbers, state.target);
+      const bestSolution = score.label === 'exact' ? null : state.precomputedSolution;
       return {
         ...state,
         phase: 'submitted',
@@ -129,6 +126,15 @@ function reducer(state: GameState, action: GameAction): GameState {
       return createInitialState();
     }
 
+    case 'SOLUTION_READY': {
+      return {
+        ...state,
+        solving: false,
+        exactSolvable: action.exactSolvable,
+        precomputedSolution: action.solution,
+      };
+    }
+
     default:
       return state;
   }
@@ -136,5 +142,22 @@ function reducer(state: GameState, action: GameAction): GameState {
 
 export function useGameState() {
   const [state, dispatch] = useReducer(reducer, undefined, createInitialState);
+
+  // Run the solver asynchronously so the UI renders before the heavy computation.
+  useEffect(() => {
+    const numbers = state.tiles.map(t => t.value);
+    const target = state.target;
+    const timer = setTimeout(() => {
+      const solution = solve(numbers, target);
+      dispatch({
+        type: 'SOLUTION_READY',
+        solution: solution ? { expression: solution.expression, result: solution.result } : null,
+        exactSolvable: solution !== null && solution.result === target,
+      });
+    }, 0);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.phase === 'playing' && state.solving]);
+
   return { state, dispatch };
 }

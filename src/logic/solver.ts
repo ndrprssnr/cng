@@ -16,8 +16,13 @@ export interface SolverResult {
   result: number;
 }
 
-type Pool = Array<{ value: number; expr: string }>;
-type BestRef = { diff: number; result: { value: number; expression: string } | null };
+type Pool = Array<{ value: number; expr: string; numCount: number; opCount: number }>;
+type BestRef = {
+  diff: number;
+  numCount: number;
+  opCount: number;
+  result: { value: number; expression: string } | null
+};
 
 const OPS = ['+', '-', '×', '÷'] as const;
 type Op = typeof OPS[number];
@@ -52,21 +57,38 @@ function needsParens(expr: string): boolean {
   return false;
 }
 
-function formatExpr(a: string, op: Op, b: string): string {
-  let left = a;
-  let right = b;
+function formatExpr(a: { expr: string; numCount: number; opCount: number }, op: Op, b: { expr: string; numCount: number; opCount: number }): { expr: string; numCount: number; opCount: number } {
+  let left = a.expr;
+  let right = b.expr;
 
   if (op === '×' || op === '÷') {
-    if (needsParens(a)) left = `(${a})`;
-    if (needsParens(b)) right = `(${b})`;
+    if (needsParens(a.expr)) left = `(${a.expr})`;
+    if (needsParens(b.expr)) right = `(${b.expr})`;
   }
 
-  return `${left} ${op} ${right}`;
+  return {
+    expr: `${left} ${op} ${right}`,
+    numCount: a.numCount + b.numCount,
+    opCount: a.opCount + b.opCount + 1,
+  };
+}
+
+/**
+ * Returns true if candidate (diff, numCount, opCount) is better than current best.
+ * Priority: smallest diff → fewest numbers → fewest operations.
+ */
+function isBetter(
+  diff: number, numCount: number, opCount: number,
+  best: BestRef
+): boolean {
+  if (diff !== best.diff) return diff < best.diff;
+  if (numCount !== best.numCount) return numCount < best.numCount;
+  return opCount < best.opCount;
 }
 
 /**
  * Recursively searches the pool for a result matching target.
- * Updates bestRef whenever a closer result is found.
+ * Updates bestRef whenever a better result is found.
  */
 function search(
   pool: Pool,
@@ -76,11 +98,13 @@ function search(
   // Check every number currently in the pool as a candidate result
   for (const item of pool) {
     const diff = Math.abs(item.value - target);
-    if (diff < bestRef.diff) {
+    if (isBetter(diff, item.numCount, item.opCount, bestRef)) {
       bestRef.diff = diff;
+      bestRef.numCount = item.numCount;
+      bestRef.opCount = item.opCount;
       bestRef.result = { value: item.value, expression: item.expr };
     }
-    if (bestRef.diff === 0) return; // exact — stop searching
+    if (bestRef.diff === 0 && bestRef.numCount === 1) return; // single-number exact — can't do simpler
   }
 
   if (pool.length < 2) return;
@@ -96,18 +120,16 @@ function search(
         // Try a op b
         const val1 = applyOp(op, a.value, b.value);
         if (val1 !== null && val1 > 0) {
-          const expr1 = formatExpr(a.expr, op, b.expr);
-          search([...rest, { value: val1, expr: expr1 }], target, bestRef);
-          if (bestRef.diff === 0) return;
+          const fmt1 = formatExpr(a, op, b);
+          search([...rest, { value: val1, ...fmt1 }], target, bestRef);
         }
 
         // Try b op a (only meaningful for - and ÷ where order matters)
         if (op === '-' || op === '÷') {
           const val2 = applyOp(op, b.value, a.value);
           if (val2 !== null && val2 > 0) {
-            const expr2 = formatExpr(b.expr, op, a.expr);
-            search([...rest, { value: val2, expr: expr2 }], target, bestRef);
-            if (bestRef.diff === 0) return;
+            const fmt2 = formatExpr(b, op, a);
+            search([...rest, { value: val2, ...fmt2 }], target, bestRef);
           }
         }
       }
@@ -123,8 +145,8 @@ function search(
 export function solve(numbers: number[], target: number): SolverResult | null {
   if (numbers.length === 0) return null;
 
-  const pool: Pool = numbers.map(n => ({ value: n, expr: String(n) }));
-  const bestRef: BestRef = { diff: Infinity, result: null };
+  const pool: Pool = numbers.map(n => ({ value: n, expr: String(n), numCount: 1, opCount: 0 }));
+  const bestRef: BestRef = { diff: Infinity, numCount: Infinity, opCount: Infinity, result: null };
 
   search(pool, target, bestRef);
 

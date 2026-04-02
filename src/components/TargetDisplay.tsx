@@ -1,17 +1,35 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, Animated, StyleSheet } from 'react-native';
 
 interface Props {
   target: number;
-  exactSolvable: boolean;
+  exactSolvable: boolean | null;
 }
 
 export default function TargetDisplay({ target, exactSolvable }: Props) {
+  const pulse = useRef(new Animated.Value(0.3)).current;
+
+  useEffect(() => {
+    if (exactSolvable !== null) return;
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0.3, duration: 500, useNativeDriver: true }),
+      ])
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [exactSolvable]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>TARGET</Text>
       <Text style={styles.target}>{target}</Text>
-      <View style={[styles.dot, exactSolvable ? styles.dotSolvable : styles.dotUnsolvable]} />
+      {exactSolvable === null ? (
+        <Animated.View style={[styles.dot, styles.dotSolving, { opacity: pulse }]} />
+      ) : (
+        <View style={[styles.dot, exactSolvable ? styles.dotSolvable : styles.dotUnsolvable]} />
+      )}
     </View>
   );
 }
@@ -49,10 +67,13 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginTop: 6,
   },
+  dotSolving: {
+    backgroundColor: '#ffffff',
+  },
   dotSolvable: {
-    backgroundColor: '#69f0ae',  // soft green
+    backgroundColor: '#69f0ae',
   },
   dotUnsolvable: {
-    backgroundColor: 'rgba(255,100,100,0.35)',  // soft red
+    backgroundColor: 'rgba(255,100,100,0.35)',
   },
 });

@@ -26,9 +26,11 @@ export interface BestSolution {
 
 export interface GameState {
   phase: 'playing' | 'submitted';
+  solving: boolean;                            // true while solver is running in the background
   tiles: NumberTileData[];
   target: number;
-  exactSolvable: boolean;            // true if an exact solution exists for this puzzle
+  exactSolvable: boolean | null;               // null until solver completes
+  precomputedSolution: BestSolution | null;    // solver result computed at game start
   expression: ExpressionToken[];
   cursorPos: number;     // insertion point: 0 = before first token, expression.length = end
   result: number | null; // live-evaluated value, recomputed in reducer
@@ -43,4 +45,5 @@ export type GameAction =
   | { type: 'CLEAR' }
   | { type: 'MOVE_CURSOR'; delta: -1 | 1 }
   | { type: 'SUBMIT' }
-  | { type: 'NEW_GAME' };
+  | { type: 'NEW_GAME' }
+  | { type: 'SOLUTION_READY'; solution: BestSolution | null; exactSolvable: boolean };
