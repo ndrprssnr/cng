@@ -1,6 +1,7 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+
 import { NumberTileData } from '../types/game';
+import React from 'react';
 
 interface Props {
   tile: NumberTileData;
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 12,
-    backgroundColor: '#1e3a5f',
+    backgroundColor: '#1a5c2e',
     justifyContent: 'center',
     alignItems: 'center',
     margin: 6,
