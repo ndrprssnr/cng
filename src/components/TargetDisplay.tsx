@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, StyleSheet } from 'react-native';
+import { View, Text, Animated, Easing, StyleSheet } from 'react-native';
 
 interface Props {
   target: number;
@@ -7,26 +7,34 @@ interface Props {
 }
 
 export default function TargetDisplay({ target, exactSolvable }: Props) {
-  const pulse = useRef(new Animated.Value(0.3)).current;
+  const pulse = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (exactSolvable !== null) return;
+    pulse.setValue(0);
     const anim = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, { toValue: 1, duration: 500, useNativeDriver: true }),
-        Animated.timing(pulse, { toValue: 0.3, duration: 500, useNativeDriver: true }),
-      ])
+      Animated.timing(pulse, {
+        toValue: 1,
+        duration: 1600,
+        easing: Easing.inOut(Easing.sin),
+        useNativeDriver: true,
+      })
     );
     anim.start();
-    return () => anim.stop();
+    return () => { anim.stop(); pulse.setValue(0); };
   }, [exactSolvable]);
+
+  const opacity = pulse.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0.25, 1, 0.25],
+  });
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>TARGET</Text>
       <Text style={styles.target}>{target}</Text>
       {exactSolvable === null ? (
-        <Animated.View style={[styles.dot, styles.dotSolving, { opacity: pulse }]} />
+        <Animated.View style={[styles.dot, styles.dotSolving, { opacity }]} />
       ) : (
         <View style={[styles.dot, exactSolvable ? styles.dotSolvable : styles.dotUnsolvable]} />
       )}
