@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ExpressionToken } from '../types/game';
 
 interface Props {
@@ -7,9 +7,10 @@ interface Props {
   cursorPos: number;
   result: number | null;
   target: number;
+  onTokenPress: (index: number) => void;
 }
 
-export default function ExpressionDisplay({ tokens, cursorPos, result, target }: Props) {
+export default function ExpressionDisplay({ tokens, cursorPos, result, target, onTokenPress }: Props) {
   const [cursorVisible, setCursorVisible] = useState(true);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -42,16 +43,26 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target }:
     );
   } else {
     const parts: React.ReactNode[] = [];
+
+    // Tappable gap before the first token (cursor position 0)
+    parts.push(
+      <TouchableOpacity key="gap-0" onPress={() => onTokenPress(0)} style={styles.gap}>
+        {cursorPos === 0 ? cursor : <Text style={styles.gapText}> </Text>}
+      </TouchableOpacity>
+    );
+
     tokens.forEach((token, index) => {
-      if (index === cursorPos) parts.push(cursor);
       parts.push(
-        <Text key={index} style={styles.token}>{token.display}</Text>
+        <Text key={`t-${index}`} style={styles.token}>{token.display}</Text>
       );
-      if (index < tokens.length - 1 || cursorPos !== tokens.length) {
-        parts.push(<Text key={`sp-${index}`} style={styles.space}> </Text>);
-      }
+      // Tappable gap after each token (cursor position index + 1)
+      parts.push(
+        <TouchableOpacity key={`gap-${index + 1}`} onPress={() => onTokenPress(index + 1)} style={styles.gap}>
+          {cursorPos === index + 1 ? cursor : <Text style={styles.gapText}> </Text>}
+        </TouchableOpacity>
+      );
     });
-    if (cursorPos === tokens.length) parts.push(cursor);
+
     exprContent = parts;
   }
 
@@ -84,9 +95,15 @@ const styles = StyleSheet.create({
     color: '#e0e0e0',
     fontFamily: 'monospace',
   },
-  space: {
+  gap: {
+    paddingHorizontal: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 14,
+  },
+  gapText: {
     fontSize: 20,
-    color: '#e0e0e0',
+    color: 'transparent',
     fontFamily: 'monospace',
   },
   cursor: {

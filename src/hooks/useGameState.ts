@@ -107,6 +107,12 @@ function reducer(state: GameState, action: GameAction): GameState {
       return { ...state, cursorPos: next };
     }
 
+    case 'SET_CURSOR': {
+      if (state.phase === 'submitted') return state;
+      const pos = Math.max(0, Math.min(action.pos, state.expression.length));
+      return { ...state, cursorPos: pos };
+    }
+
     case 'SUBMIT': {
       if (!canSubmit(state.expression, state.result, state.tiles)) return state;
       const result = evaluateExpression(state.expression);

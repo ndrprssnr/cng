@@ -26,6 +26,7 @@ export default function GameScreen() {
             cursorPos={state.cursorPos}
             result={state.result}
             target={state.target}
+            onTokenPress={pos => dispatch({ type: 'SET_CURSOR', pos })}
           />
 
           <View style={styles.tilesGrid}>

@@ -44,6 +44,7 @@ export type GameAction =
   | { type: 'BACKSPACE' }
   | { type: 'CLEAR' }
   | { type: 'MOVE_CURSOR'; delta: -1 | 1 }
+  | { type: 'SET_CURSOR'; pos: number }
   | { type: 'SUBMIT' }
   | { type: 'NEW_GAME' }
   | { type: 'SOLUTION_READY'; solution: BestSolution | null; exactSolvable: boolean };
