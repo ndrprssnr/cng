@@ -46,8 +46,7 @@ function applyOp(op: Op, a: number, b: number): number | null {
 }
 
 function needsParens(expr: string): boolean {
-  // Wrap in parens if the expression contains a lower-precedence operator
-  // at the top level (i.e., + or - not already parenthesised)
+  // True if the expression contains a + or - at the top level (outside parens)
   let depth = 0;
   for (const ch of expr) {
     if (ch === '(') depth++;
@@ -57,12 +56,29 @@ function needsParens(expr: string): boolean {
   return false;
 }
 
+function hasAnyOperator(expr: string): boolean {
+  // True if the expression contains any operator at the top level
+  let depth = 0;
+  for (const ch of expr) {
+    if (ch === '(') depth++;
+    if (ch === ')') depth--;
+    if (depth === 0 && (ch === '+' || ch === '-' || ch === '×' || ch === '÷')) return true;
+  }
+  return false;
+}
+
 function formatExpr(a: { expr: string; numCount: number; opCount: number }, op: Op, b: { expr: string; numCount: number; opCount: number }): { expr: string; numCount: number; opCount: number } {
   let left = a.expr;
   let right = b.expr;
 
   if (op === '×' || op === '÷') {
+    // Both operands need parens if they contain lower-precedence ops
     if (needsParens(a.expr)) left = `(${a.expr})`;
+    if (needsParens(b.expr)) right = `(${b.expr})`;
+    // Right operand of ÷ also needs parens if it contains × or ÷
+    if (op === '÷' && hasAnyOperator(b.expr)) right = `(${b.expr})`;
+  } else if (op === '-') {
+    // Right operand of - needs parens if it contains + or - (e.g. a-(b+c))
     if (needsParens(b.expr)) right = `(${b.expr})`;
   }
 
