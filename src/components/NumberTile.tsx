@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { NumberTileData } from '../types/game';
 import React from 'react';
@@ -17,20 +17,9 @@ export default function NumberTile({ tile, onPress, disabled }: Props) {
       disabled={disabled}
       activeOpacity={0.7}
     >
-      <View style={styles.textContainer}>
-        {/* Dark shadow below — depth of the engraving */}
-        <Text style={[styles.value, styles.shadowDark, disabled && styles.disabledText]}>
-          {tile.value}
-        </Text>
-        {/* Light highlight above — reflection on the upper edge */}
-        <Text style={[styles.value, styles.shadowLight, styles.overlay, disabled && styles.disabledText]}>
-          {tile.value}
-        </Text>
-        {/* Main text on top */}
-        <Text style={[styles.value, styles.overlay, disabled && styles.disabledText]}>
-          {tile.value}
-        </Text>
-      </View>
+      <Text style={[styles.value, disabled && styles.disabledText]}>
+        {tile.value}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -55,30 +44,17 @@ const styles = StyleSheet.create({
     opacity: 0.4,
     elevation: 0,
   },
-  textContainer: {
-    position: 'relative',
-  },
   value: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  shadowDark: {
-    textShadowColor: 'rgba(0,0,0,0.7)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 2,
-  },
-  shadowLight: {
-    textShadowColor: 'rgba(255,255,255,0.25)',
-    textShadowOffset: { width: 0, height: -1 },
+    // Dark amber text = the "recess"; light shadow above = highlight on the upper lip
+    color: '#7a4a00',
+    textShadowColor: 'rgba(255,255,255,0.7)',
+    textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 1,
   },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
   disabledText: {
-    color: '#888',
+    color: '#555',
+    textShadowColor: 'transparent',
   },
 });
