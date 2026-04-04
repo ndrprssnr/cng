@@ -47,14 +47,13 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 22,
     fontWeight: 'bold',
-    // Dark amber text = the "recess"; light shadow above = highlight on the upper lip
-    color: '#7a4a00',
-    textShadowColor: 'rgba(255,255,255,0.7)',
-    textShadowOffset: { width: 0, height: 1 },
+    color: '#ffffff',
+    textShadowColor: 'rgb(0, 0, 0)',
+    textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 1,
   },
   disabledText: {
-    color: '#555',
+    color: '#888',
     textShadowColor: 'transparent',
   },
 });
