@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { ExpressionToken } from '../types/game';
 
 interface Props {
@@ -71,9 +72,11 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
       <View style={styles.exprRow}>
         {exprContent}
       </View>
-      <Text style={[styles.result, { color: resultColor }]}>
-        {result !== null ? `= ${result}` : ' '}
-      </Text>
+      <View style={styles.resultRow}>
+        <Text style={[styles.result, { color: resultColor }]}>
+          {result !== null ? `= ${result}` : ' '}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -83,7 +86,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a2e',
     borderRadius: 12,
     padding: 14,
+    minHeight: 116,
     marginBottom: 16,
+    justifyContent: 'space-between',
   },
   exprRow: {
     flexDirection: 'row',
@@ -123,6 +128,8 @@ const styles = StyleSheet.create({
   result: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 4,
+  },
+  resultRow: {
+    justifyContent: 'flex-end',
   },
 });
