@@ -1,5 +1,5 @@
+import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, Easing, StyleSheet } from 'react-native';
 
 interface Props {
   target: number;
@@ -50,10 +50,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 40,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 5,
     elevation: 6,
   },
   label: {
