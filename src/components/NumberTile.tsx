@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 12,
-    backgroundColor: '#f0b000',
+    backgroundColor: '#daa000',
     justifyContent: 'center',
     alignItems: 'center',
     margin: 6,
@@ -41,12 +41,9 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   value: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#ffffff',
-    textShadowColor: 'rgb(0, 0, 0)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 1,
   },
   disabledText: {
     color: '#888',
