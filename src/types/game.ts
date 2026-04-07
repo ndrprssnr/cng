@@ -22,6 +22,7 @@ export interface ScoreResult {
 export interface BestSolution {
   expression: string;
   result: number;
+  numCount: number;
 }
 
 export interface GameState {

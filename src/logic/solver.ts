@@ -14,13 +14,13 @@
 export interface SolverResult {
   expression: string;
   result: number;
+  numCount: number;
 }
 
-type Pool = Array<{ value: number; expr: string; numCount: number; opCount: number }>;
+type Pool = Array<{ value: number; expr: string; numCount: number }>;
 type BestRef = {
   diff: number;
   numCount: number;
-  opCount: number;
   result: { value: number; expression: string } | null
 };
 
@@ -67,7 +67,7 @@ function hasAnyOperator(expr: string): boolean {
   return false;
 }
 
-function formatExpr(a: { expr: string; numCount: number; opCount: number }, op: Op, b: { expr: string; numCount: number; opCount: number }): { expr: string; numCount: number; opCount: number } {
+function formatExpr(a: { expr: string; numCount: number }, op: Op, b: { expr: string; numCount: number }): { expr: string; numCount: number } {
   let left = a.expr;
   let right = b.expr;
 
@@ -85,21 +85,19 @@ function formatExpr(a: { expr: string; numCount: number; opCount: number }, op: 
   return {
     expr: `${left} ${op} ${right}`,
     numCount: a.numCount + b.numCount,
-    opCount: a.opCount + b.opCount + 1,
   };
 }
 
 /**
- * Returns true if candidate (diff, numCount, opCount) is better than current best.
- * Priority: smallest diff → fewest numbers → fewest operations.
+ * Returns true if candidate (diff, numCount) is better than current best.
+ * Priority: smallest diff → fewest numbers.
  */
 function isBetter(
-  diff: number, numCount: number, opCount: number,
+  diff: number, numCount: number,
   best: BestRef
 ): boolean {
   if (diff !== best.diff) return diff < best.diff;
-  if (numCount !== best.numCount) return numCount < best.numCount;
-  return opCount < best.opCount;
+  return numCount < best.numCount;
 }
 
 /**
@@ -114,10 +112,9 @@ function search(
   // Check every number currently in the pool as a candidate result
   for (const item of pool) {
     const diff = Math.abs(item.value - target);
-    if (isBetter(diff, item.numCount, item.opCount, bestRef)) {
+    if (isBetter(diff, item.numCount, bestRef)) {
       bestRef.diff = diff;
       bestRef.numCount = item.numCount;
-      bestRef.opCount = item.opCount;
       bestRef.result = { value: item.value, expression: item.expr };
     }
     if (bestRef.diff === 0 && bestRef.numCount === 1) return; // single-number exact — can't do simpler
@@ -161,11 +158,15 @@ function search(
 export function solve(numbers: number[], target: number): SolverResult | null {
   if (numbers.length === 0) return null;
 
-  const pool: Pool = numbers.map(n => ({ value: n, expr: String(n), numCount: 1, opCount: 0 }));
-  const bestRef: BestRef = { diff: Infinity, numCount: Infinity, opCount: Infinity, result: null };
+  const pool: Pool = numbers.map(n => ({ value: n, expr: String(n), numCount: 1 }));
+  const bestRef: BestRef = { diff: Infinity, numCount: Infinity, result: null };
 
   search(pool, target, bestRef);
 
   if (!bestRef.result) return null;
-  return { expression: bestRef.result.expression, result: bestRef.result.value };
+  return {
+    expression: bestRef.result.expression,
+    result: bestRef.result.value,
+    numCount: bestRef.numCount,
+  };
 }

@@ -22,6 +22,14 @@ function createInitialState(): GameState {
   };
 }
 
+function countTokens(tokens: ExpressionToken[]): { numCount: number } {
+  let numCount = 0;
+  for (const t of tokens) {
+    if (t.type === 'number') numCount++;
+  }
+  return { numCount };
+}
+
 function reducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'TAP_TILE': {
@@ -118,7 +126,22 @@ function reducer(state: GameState, action: GameAction): GameState {
       const result = evaluateExpression(state.expression);
       if (result === null) return state;
       const score = computeScore(result, state.target);
-      const bestSolution = score.label === 'exact' ? null : state.precomputedSolution;
+      const pre = state.precomputedSolution;
+
+      // Show the precomputed solution if it is strictly simpler than the user's solution.
+      // "Simpler" follows the same tiebreaker as the solver: fewer numbers → fewer operations.
+      let bestSolution = null;
+      if (pre && pre.result === state.target && result === state.target) {
+        // Both exact: show precomputed only if it uses fewer numbers (or same numbers, fewer ops)
+        const user = countTokens(state.expression);
+        if (pre.numCount < user.numCount) {
+          bestSolution = pre;
+        }
+      } else if (score.label !== 'exact') {
+        // User didn't hit target: show best precomputed solution as before
+        bestSolution = pre;
+      }
+
       return {
         ...state,
         phase: 'submitted',
@@ -157,7 +180,11 @@ export function useGameState() {
       const solution = solve(numbers, target);
       dispatch({
         type: 'SOLUTION_READY',
-        solution: solution ? { expression: solution.expression, result: solution.result } : null,
+        solution: solution ? {
+          expression: solution.expression,
+          result: solution.result,
+          numCount: solution.numCount,
+        } : null,
         exactSolvable: solution !== null && solution.result === target,
       });
     }, 0);

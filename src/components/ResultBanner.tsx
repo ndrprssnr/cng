@@ -27,11 +27,11 @@ export default function ResultBanner({ score, result, target, bestSolution }: Pr
         <Text style={styles.text}>{message}</Text>
       </View>
 
-      {!isExact && bestSolution && (
+      {bestSolution && (
         <View style={styles.solutionBox}>
           {bestSolution.result === target ? (
             <>
-              <Text style={styles.solutionLabel}>Best solution:</Text>
+              <Text style={styles.solutionLabel}>{isExact ? 'Simpler solution:' : 'Best solution:'}</Text>
               <Text style={styles.solutionExpr}>{bestSolution.expression} = {bestSolution.result}</Text>
             </>
           ) : (
