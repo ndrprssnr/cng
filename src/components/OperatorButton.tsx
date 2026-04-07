@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   label: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#ffffff',
   },
