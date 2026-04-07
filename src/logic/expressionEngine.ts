@@ -139,7 +139,29 @@ function evalRPN(postfix: ExpressionToken[]): number | null {
   return stack.length === 1 ? stack[0] : null;
 }
 
+/**
+ * Preflight heuristic for infix: reject token pairs that indicate accidental
+ * prefix/postfix mixed into an infix expression.
+ *   - ( followed by arithmetic operator  →  prefix sub-expression leaking in
+ *   - arithmetic operator followed by )  →  postfix sub-expression leaking in
+ *   - arithmetic operator followed by arithmetic operator  →  either notation mixed
+ */
+function isValidInfix(tokens: ExpressionToken[]): boolean {
+  for (let i = 0; i < tokens.length - 1; i++) {
+    const cur  = tokens[i];
+    const next = tokens[i + 1];
+    const curIsArith  = cur.operator  !== undefined && isArithmeticOperator(cur.operator);
+    const nextIsArith = next.operator !== undefined && isArithmeticOperator(next.operator);
+
+    if (cur.operator === '(' && nextIsArith) return false;  // ( followed by operator
+    if (curIsArith && next.operator === ')') return false;  // operator followed by )
+    if (curIsArith && nextIsArith)           return false;  // operator followed by operator
+  }
+  return true;
+}
+
 function evaluateInfix(tokens: ExpressionToken[]): number | null {
+  if (!isValidInfix(tokens)) return null;
   const postfix = toPostfix(tokens);
   if (!postfix || postfix.length === 0) return null;
   return evalRPN(postfix);

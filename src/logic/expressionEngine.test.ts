@@ -388,10 +388,36 @@ describe('getLiveResult – postfix completeness', () => {
 // ── Mixed notation rejection ───────────────────────────────────────────────────
 
 describe('evaluateExpression – mixed notation returns null', () => {
-  // 2 + (- 6 3) — outer infix, inner prefix (without explicit paren isolation)
-  // detectNotation sees first=2 (number), last=3 (number) → infix
-  // infix evaluator will fail to parse '- 6 3' as valid infix → null
-  test('2 + - 6 3 = null (mixed infix/prefix)', () => {
+  // ── operator followed by operator ──
+  test('2 + - 6 3 = null (op followed by op)', () => {
     expect(evaluateExpression([num(2), ADD, SUB, num(6), num(3)])).toBeNull();
+  });
+
+  test('3 + × 4 = null (two operators in a row)', () => {
+    expect(evaluateExpression([num(3), ADD, MUL, num(4)])).toBeNull();
+  });
+
+  // ── ( followed by arithmetic operator ──
+  test('2 + (- 6 3) = null (open paren followed by op)', () => {
+    expect(evaluateExpression([num(2), ADD, LPAR, SUB, num(6), num(3), RPAR])).toBeNull();
+  });
+
+  // ── arithmetic operator followed by ) ──
+  test('2 × (6 3 -) = null (op followed by close paren)', () => {
+    expect(evaluateExpression([num(2), MUL, LPAR, num(6), num(3), SUB, RPAR])).toBeNull();
+  });
+
+  // ── paren-wrapped prefix mixed with infix ──
+  // (+ 2 3) × 4: strip outer parens → first token is + → routed to prefix;
+  // prefix parser consumes + 2 3 but then sees leftover × 4 → returns null
+  test('(+ 2 3) × 4 = null (paren-prefix mixed with infix)', () => {
+    expect(evaluateExpression([LPAR, ADD, num(2), num(3), RPAR, MUL, num(4)])).toBeNull();
+  });
+
+  // ── paren-wrapped postfix inside infix context ──
+  // (2 3 +) × 4: strip → last token is 4 (number) → routed to infix;
+  // infix preflight sees op(+) before ) inside parens → null
+  test('(2 3 +) × 4 = null (postfix inside infix context)', () => {
+    expect(evaluateExpression([LPAR, num(2), num(3), ADD, RPAR, MUL, num(4)])).toBeNull();
   });
 });
