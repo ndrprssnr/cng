@@ -29,7 +29,7 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
     : '#90caf9';
 
   const cursor = (
-    <Text key="cursor" style={[styles.cursor, !cursorVisible && styles.cursorHidden]}>
+    <Text key="cursor" style={[styles.tick, styles.tickActive, !cursorVisible && styles.tickHidden]}>
       |
     </Text>
   );
@@ -48,7 +48,7 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
     // Tappable gap before the first token (cursor position 0)
     parts.push(
       <TouchableOpacity key="gap-0" onPress={() => onTokenPress(0)} style={styles.gap}>
-        {cursorPos === 0 ? cursor : <Text style={styles.gapText}> </Text>}
+        <Text style={[styles.tick, cursorPos === 0 && (cursorVisible ? styles.tickActive : styles.tickHidden)]}>|</Text>
       </TouchableOpacity>
     );
 
@@ -57,9 +57,10 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
         <Text key={`t-${index}`} style={styles.token}>{token.display}</Text>
       );
       // Tappable gap after each token (cursor position index + 1)
+      const isActive = cursorPos === index + 1;
       parts.push(
         <TouchableOpacity key={`gap-${index + 1}`} onPress={() => onTokenPress(index + 1)} style={styles.gap}>
-          {cursorPos === index + 1 ? cursor : <Text style={styles.gapText}> </Text>}
+          <Text style={[styles.tick, isActive && (cursorVisible ? styles.tickActive : styles.tickHidden)]}>|</Text>
         </TouchableOpacity>
       );
     });
@@ -101,23 +102,20 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
   },
   gap: {
-    paddingHorizontal: 3,
+    paddingHorizontal: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    minWidth: 14,
   },
-  gapText: {
+  tick: {
     fontSize: 20,
-    color: 'transparent',
-    fontFamily: 'monospace',
-  },
-  cursor: {
-    fontSize: 22,
-    color: '#64b5f6',
+    color: 'rgba(255, 255, 255, 0.1)',
     fontWeight: '200',
     fontFamily: 'monospace',
   },
-  cursorHidden: {
+  tickActive: {
+    color: '#64b5f6',
+  },
+  tickHidden: {
     opacity: 0,
   },
   placeholder: {
