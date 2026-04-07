@@ -242,3 +242,156 @@ describe('getLiveResult – only evaluates syntactically complete expressions', 
     expect(getLiveResult([])).toBeNull();
   });
 });
+
+// ── PREFIX notation ───────────────────────────────────────────────────────────
+
+describe('evaluateExpression – prefix notation', () => {
+  test('+ 2 3 = 5', () => {
+    expect(evaluateExpression([ADD, num(2), num(3)])).toBe(5);
+  });
+
+  test('× 3 4 = 12', () => {
+    expect(evaluateExpression([MUL, num(3), num(4)])).toBe(12);
+  });
+
+  test('- 10 3 = 7', () => {
+    expect(evaluateExpression([SUB, num(10), num(3)])).toBe(7);
+  });
+
+  test('÷ 12 4 = 3', () => {
+    expect(evaluateExpression([DIV, num(12), num(4)])).toBe(3);
+  });
+
+  // + (× 2 3) 4 = (2×3) + 4 = 10
+  test('+ × 2 3 4 = 10 (nested prefix)', () => {
+    expect(evaluateExpression([ADD, MUL, num(2), num(3), num(4)])).toBe(10);
+  });
+
+  // × (+ 2 3) (+ 1 4) = 5 × 5 = 25
+  test('× + 2 3 + 1 4 = 25', () => {
+    expect(evaluateExpression([MUL, ADD, num(2), num(3), ADD, num(1), num(4)])).toBe(25);
+  });
+
+  // ÷ (× 2 6) 4 = 12 ÷ 4 = 3
+  test('÷ × 2 6 4 = 3', () => {
+    expect(evaluateExpression([DIV, MUL, num(2), num(6), num(4)])).toBe(3);
+  });
+
+  // ÷ (+ 1 2) 4 = 3 ÷ 4 = null (non-integer)
+  test('÷ + 1 2 4 = null (non-integer)', () => {
+    expect(evaluateExpression([DIV, ADD, num(1), num(2), num(4)])).toBeNull();
+  });
+
+  // paren-wrapped: (+ 2 3) = 5
+  test('(+ 2 3) = 5 (paren-wrapped prefix)', () => {
+    expect(evaluateExpression([LPAR, ADD, num(2), num(3), RPAR])).toBe(5);
+  });
+
+  // grouped sub-expression: + (× 2 3) 6 = 12
+  test('+ (× 2 3) 6 = 12 (parens around sub-expression)', () => {
+    expect(evaluateExpression([ADD, LPAR, MUL, num(2), num(3), RPAR, num(6)])).toBe(12);
+  });
+
+  // extra tokens make it malformed
+  test('+ 2 3 4 = null (too many operands)', () => {
+    expect(evaluateExpression([ADD, num(2), num(3), num(4)])).toBeNull();
+  });
+
+  // single operator, missing operands
+  test('+ 2 = null (missing right operand)', () => {
+    expect(evaluateExpression([ADD, num(2)])).toBeNull();
+  });
+});
+
+describe('getLiveResult – prefix completeness', () => {
+  test('returns null while only operator entered: +', () => {
+    expect(getLiveResult([ADD])).toBeNull();
+  });
+
+  test('returns null mid-prefix: + 2', () => {
+    expect(getLiveResult([ADD, num(2)])).toBeNull();
+  });
+
+  test('returns result for complete prefix: + 2 3', () => {
+    expect(getLiveResult([ADD, num(2), num(3)])).toBe(5);
+  });
+
+  test('returns result for nested prefix: × + 2 3 + 1 4', () => {
+    expect(getLiveResult([MUL, ADD, num(2), num(3), ADD, num(1), num(4)])).toBe(25);
+  });
+});
+
+// ── POSTFIX notation ──────────────────────────────────────────────────────────
+
+describe('evaluateExpression – postfix notation', () => {
+  test('2 3 + = 5', () => {
+    expect(evaluateExpression([num(2), num(3), ADD])).toBe(5);
+  });
+
+  test('3 4 × = 12', () => {
+    expect(evaluateExpression([num(3), num(4), MUL])).toBe(12);
+  });
+
+  test('10 3 - = 7', () => {
+    expect(evaluateExpression([num(10), num(3), SUB])).toBe(7);
+  });
+
+  test('12 4 ÷ = 3', () => {
+    expect(evaluateExpression([num(12), num(4), DIV])).toBe(3);
+  });
+
+  // 2 3 × 4 + = (2×3) + 4 = 10
+  test('2 3 × 4 + = 10', () => {
+    expect(evaluateExpression([num(2), num(3), MUL, num(4), ADD])).toBe(10);
+  });
+
+  // 2 3 + 1 4 + × = 5 × 5 = 25
+  test('2 3 + 1 4 + × = 25', () => {
+    expect(evaluateExpression([num(2), num(3), ADD, num(1), num(4), ADD, MUL])).toBe(25);
+  });
+
+  // 2 6 × 4 ÷ = 12 ÷ 4 = 3
+  test('2 6 × 4 ÷ = 3', () => {
+    expect(evaluateExpression([num(2), num(6), MUL, num(4), DIV])).toBe(3);
+  });
+
+  // 1 2 + 4 ÷ = 3 ÷ 4 = null (non-integer)
+  test('1 2 + 4 ÷ = null (non-integer)', () => {
+    expect(evaluateExpression([num(1), num(2), ADD, num(4), DIV])).toBeNull();
+  });
+
+  // paren-wrapped: (2 3 +) = 5
+  test('(2 3 +) = 5 (paren-wrapped postfix)', () => {
+    expect(evaluateExpression([LPAR, num(2), num(3), ADD, RPAR])).toBe(5);
+  });
+
+  // missing operand
+  test('3 + = null (missing left operand)', () => {
+    expect(evaluateExpression([num(3), ADD])).toBeNull();
+  });
+});
+
+describe('getLiveResult – postfix completeness', () => {
+  test('returns null while expression ends with number: 2 3', () => {
+    expect(getLiveResult([num(2), num(3)])).toBeNull();
+  });
+
+  test('returns result for complete postfix: 2 3 +', () => {
+    expect(getLiveResult([num(2), num(3), ADD])).toBe(5);
+  });
+
+  test('returns result for longer postfix: 2 3 × 4 +', () => {
+    expect(getLiveResult([num(2), num(3), MUL, num(4), ADD])).toBe(10);
+  });
+});
+
+// ── Mixed notation rejection ───────────────────────────────────────────────────
+
+describe('evaluateExpression – mixed notation returns null', () => {
+  // 2 + (- 6 3) — outer infix, inner prefix (without explicit paren isolation)
+  // detectNotation sees first=2 (number), last=3 (number) → infix
+  // infix evaluator will fail to parse '- 6 3' as valid infix → null
+  test('2 + - 6 3 = null (mixed infix/prefix)', () => {
+    expect(evaluateExpression([num(2), ADD, SUB, num(6), num(3)])).toBeNull();
+  });
+});

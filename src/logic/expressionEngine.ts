@@ -1,10 +1,12 @@
 import { ExpressionToken, Operator } from '../types/game';
 
+// ── Shared helpers ────────────────────────────────────────────────────────────
+
 const PRECEDENCE: Record<string, number> = {
   '+': 1, '-': 1, '×': 2, '÷': 2,
 };
 
-function isArithmeticOperator(op: string): boolean {
+function isArithmeticOperator(op: string): op is Operator {
   return op in PRECEDENCE;
 }
 
@@ -19,16 +21,59 @@ function applyOp(op: Operator, a: number, b: number): number | null {
     case '×': return a * b;
     case '÷':
       if (b === 0) return null;
-      if (a % b !== 0) return null; // only exact division
+      if (a % b !== 0) return null;
       return a / b;
     default: return null;
   }
 }
 
+function isBalanced(tokens: ExpressionToken[]): boolean {
+  let depth = 0;
+  for (const t of tokens) {
+    if (t.operator === '(') depth++;
+    if (t.operator === ')') depth--;
+    if (depth < 0) return false;
+  }
+  return depth === 0;
+}
+
+// ── Notation detection ────────────────────────────────────────────────────────
+
 /**
- * Converts infix token array to postfix (RPN) using shunting-yard.
- * Returns null if the expression is malformed (unbalanced parens, etc.)
+ * If the entire token list is wrapped in a matching outer pair of parens,
+ * returns the inner slice. Otherwise returns the original list.
+ * e.g. (+ 2 3) → [+, 2, 3];  (2+3)×4 → unchanged (the ( does not wrap all).
  */
+function stripOuterParens(tokens: ExpressionToken[]): ExpressionToken[] {
+  if (tokens.length < 2) return tokens;
+  if (tokens[0].operator !== '(' || tokens[tokens.length - 1].operator !== ')') return tokens;
+  // Walk to check the opening paren actually closes at the last token
+  let depth = 0;
+  for (let i = 0; i < tokens.length - 1; i++) {
+    if (tokens[i].operator === '(') depth++;
+    if (tokens[i].operator === ')') depth--;
+    if (depth === 0) return tokens; // closed before the end — not a full wrapper
+  }
+  return tokens.slice(1, tokens.length - 1);
+}
+
+type Notation = 'infix' | 'prefix' | 'postfix';
+
+function detectNotation(tokens: ExpressionToken[]): Notation {
+  const inner = stripOuterParens(tokens);
+  const first = inner[0];
+  if (first && first.type === 'operator' && isArithmeticOperator(first.operator!)) {
+    return 'prefix';
+  }
+  const last = inner[inner.length - 1];
+  if (last && last.type === 'operator' && isArithmeticOperator(last.operator!)) {
+    return 'postfix';
+  }
+  return 'infix';
+}
+
+// ── Infix evaluator (shunting-yard) ──────────────────────────────────────────
+
 function toPostfix(tokens: ExpressionToken[]): ExpressionToken[] | null {
   const output: ExpressionToken[] = [];
   const opStack: ExpressionToken[] = [];
@@ -44,14 +89,10 @@ function toPostfix(tokens: ExpressionToken[]): ExpressionToken[] | null {
         let foundOpen = false;
         while (opStack.length > 0) {
           const top = opStack[opStack.length - 1];
-          if (top.operator === '(') {
-            opStack.pop();
-            foundOpen = true;
-            break;
-          }
+          if (top.operator === '(') { opStack.pop(); foundOpen = true; break; }
           output.push(opStack.pop()!);
         }
-        if (!foundOpen) return null; // unmatched )
+        if (!foundOpen) return null;
       } else {
         const prec = PRECEDENCE[op];
         while (opStack.length > 0) {
@@ -74,20 +115,15 @@ function toPostfix(tokens: ExpressionToken[]): ExpressionToken[] | null {
 
   while (opStack.length > 0) {
     const top = opStack.pop()!;
-    if (top.operator === '(' || top.operator === ')') return null; // unmatched (
+    if (top.operator === '(' || top.operator === ')') return null;
     output.push(top);
   }
 
   return output;
 }
 
-/**
- * Evaluates a postfix (RPN) token array.
- * Returns null on any invalid operation (non-integer intermediate, div by zero, etc.)
- */
-function evalPostfix(postfix: ExpressionToken[]): number | null {
+function evalRPN(postfix: ExpressionToken[]): number | null {
   const stack: number[] = [];
-
   for (const token of postfix) {
     if (token.type === 'number') {
       stack.push(token.value!);
@@ -95,47 +131,127 @@ function evalPostfix(postfix: ExpressionToken[]): number | null {
       if (stack.length < 2) return null;
       const b = stack.pop()!;
       const a = stack.pop()!;
-      const result = applyOp(token.operator as Operator, a, b);
-      if (result === null) return null;
-      if (!Number.isInteger(result)) return null;
+      const result = applyOp(token.operator, a, b);
+      if (result === null || !Number.isInteger(result)) return null;
       stack.push(result);
     }
   }
-
-  if (stack.length !== 1) return null;
-  return stack[0];
+  return stack.length === 1 ? stack[0] : null;
 }
 
+function evaluateInfix(tokens: ExpressionToken[]): number | null {
+  const postfix = toPostfix(tokens);
+  if (!postfix || postfix.length === 0) return null;
+  return evalRPN(postfix);
+}
+
+// ── Postfix evaluator (direct RPN stack) ─────────────────────────────────────
+
+function evaluatePostfix(tokens: ExpressionToken[]): number | null {
+  const stack: number[] = [];
+  for (const token of tokens) {
+    if (token.type === 'number') {
+      stack.push(token.value!);
+    } else if (token.operator === '(' || token.operator === ')') {
+      // parens are structural hints only; skip in postfix
+      continue;
+    } else if (token.operator && isArithmeticOperator(token.operator)) {
+      if (stack.length < 2) return null;
+      const b = stack.pop()!;
+      const a = stack.pop()!;
+      const result = applyOp(token.operator, a, b);
+      if (result === null || !Number.isInteger(result)) return null;
+      stack.push(result);
+    }
+  }
+  return stack.length === 1 ? stack[0] : null;
+}
+
+// ── Prefix evaluator (recursive descent) ─────────────────────────────────────
+
+function evaluatePrefix(tokens: ExpressionToken[]): number | null {
+  let pos = 0;
+
+  function parse(): number | null {
+    if (pos >= tokens.length) return null;
+    const token = tokens[pos];
+
+    if (token.operator === '(') {
+      pos++; // consume '('
+      const result = parse();
+      if (result === null) return null;
+      if (pos >= tokens.length || tokens[pos].operator !== ')') return null;
+      pos++; // consume ')'
+      return result;
+    }
+
+    if (token.type === 'number') {
+      pos++;
+      return token.value!;
+    }
+
+    if (token.operator && isArithmeticOperator(token.operator)) {
+      pos++; // consume operator
+      const left = parse();
+      if (left === null) return null;
+      const right = parse();
+      if (right === null) return null;
+      const result = applyOp(token.operator, left, right);
+      if (result === null || !Number.isInteger(result)) return null;
+      return result;
+    }
+
+    return null;
+  }
+
+  const result = parse();
+  // All tokens must be consumed for a well-formed prefix expression
+  if (pos !== tokens.length) return null;
+  return result;
+}
+
+// ── Public API ────────────────────────────────────────────────────────────────
+
 /**
- * Evaluates an infix expression token array.
- * Returns null if the expression is invalid or produces non-integer intermediates.
+ * Evaluates an expression token array. Automatically detects whether the
+ * expression is in prefix, infix, or postfix notation and dispatches to the
+ * appropriate evaluator. Returns null for invalid or mixed-notation expressions.
  */
 export function evaluateExpression(tokens: ExpressionToken[]): number | null {
   if (tokens.length === 0) return null;
-  const postfix = toPostfix(tokens);
-  if (!postfix) return null;
-  if (postfix.length === 0) return null;
-  return evalPostfix(postfix);
+  const notation = detectNotation(tokens);
+  switch (notation) {
+    case 'prefix':  return evaluatePrefix(tokens);
+    case 'postfix': return evaluatePostfix(tokens);
+    case 'infix':   return evaluateInfix(tokens);
+  }
 }
 
 /**
- * Returns a live result only if the expression looks syntactically complete.
- * This prevents showing errors while the user is mid-typing.
+ * Returns a live result only if the expression looks syntactically complete
+ * for its detected notation. Prevents showing errors while the user is mid-typing.
  */
 export function getLiveResult(tokens: ExpressionToken[]): number | null {
   if (tokens.length === 0) return null;
+  if (!isBalanced(tokens)) return null;
 
-  const last = tokens[tokens.length - 1];
-  if (last.type === 'operator' && last.operator !== ')') return null;
+  const notation = detectNotation(tokens);
+  const inner = stripOuterParens(tokens);
 
-  // Check balanced parens
-  let depth = 0;
-  for (const t of tokens) {
-    if (t.operator === '(') depth++;
-    if (t.operator === ')') depth--;
-    if (depth < 0) return null;
+  if (notation === 'infix') {
+    // Complete when last token is a number or closing paren
+    const last = tokens[tokens.length - 1];
+    if (last.type === 'operator' && last.operator !== ')') return null;
+  } else if (notation === 'postfix') {
+    // Complete when inner last token is an arithmetic operator
+    const last = inner[inner.length - 1];
+    if (!last || last.type !== 'operator' || !isArithmeticOperator(last.operator!)) return null;
+  } else {
+    // prefix: complete when inner first token is an arithmetic operator
+    // (detectNotation already guarantees this, guard for clarity)
+    const first = inner[0];
+    if (!first || first.type !== 'operator' || !isArithmeticOperator(first.operator!)) return null;
   }
-  if (depth !== 0) return null;
 
   return evaluateExpression(tokens);
 }
