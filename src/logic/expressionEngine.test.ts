@@ -1,5 +1,5 @@
-import { evaluateExpression, getLiveResult } from './expressionEngine';
 import { ExpressionToken, Operator } from '../types/game';
+import { evaluateExpression, getLiveResult } from './expressionEngine';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -103,6 +103,11 @@ describe('evaluateExpression – parentheses override precedence', () => {
   // 100 - (25 + 75) = 0
   test('100 - (25 + 75) = 0', () => {
     expect(evaluateExpression([num(100), SUB, LPAR, num(25), ADD, num(75), RPAR])).toBe(0);
+  });
+
+  // 8 - (3 - 2) = 7
+  test('8 - (3 - 2) = 3', () => {
+    expect(evaluateExpression([num(8), SUB, LPAR, num(3), SUB, num(2), RPAR])).toBe(7);
   });
 
   // nested: (2 + (3 × 4)) = 14
