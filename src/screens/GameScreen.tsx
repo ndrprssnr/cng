@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, SafeAreaView, ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useGameState } from '../hooks/useGameState';
+import { useScratchpadState } from '../hooks/useScratchpadState';
 import { canSubmit } from '../logic/validation';
 import { Operator } from '../types/game';
 import TargetDisplay from '../components/TargetDisplay';
@@ -9,16 +10,40 @@ import NumberTile from '../components/NumberTile';
 import OperatorButton from '../components/OperatorButton';
 import ActionButtons from '../components/ActionButtons';
 import ResultBanner from '../components/ResultBanner';
+import ModeToggle from '../components/ModeToggle';
+import ScratchpadScreen from './ScratchpadScreen';
 
 export default function GameScreen() {
   const { state, dispatch } = useGameState();
+  const { state: spState, dispatch: spDispatch } = useScratchpadState(state.tiles, state.target);
+  const [mode, setMode] = useState<'classic' | 'scratchpad'>('classic');
 
   const submitEnabled = canSubmit(state.expression, state.result, state.tiles);
+
+  if (mode === 'scratchpad') {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.modeToggleWrapper}>
+          <ModeToggle mode={mode} onModeChange={setMode} />
+        </View>
+        <ScratchpadScreen
+          state={spState}
+          dispatch={spDispatch}
+          onNewGame={() => {
+            dispatch({ type: 'NEW_GAME' });
+            spDispatch({ type: 'SP_NEW_GAME', tiles: state.tiles, target: state.target });
+          }}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
+          <ModeToggle mode={mode} onModeChange={setMode} />
+
           <TargetDisplay target={state.target} exactSolvable={state.exactSolvable} />
 
           <ExpressionDisplay
@@ -117,6 +142,11 @@ export default function GameScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
+    backgroundColor: '#0d1117',
+  },
+  modeToggleWrapper: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
     backgroundColor: '#0d1117',
   },
   scroll: {

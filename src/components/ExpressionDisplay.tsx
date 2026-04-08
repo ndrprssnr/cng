@@ -9,18 +9,25 @@ interface Props {
   result: number | null;
   target: number;
   onTokenPress: (index: number) => void;
+  /** When false, cursor is hidden and the blink timer is not started. Default: true */
+  cursorActive?: boolean;
+  /** When false, the "= result" row is not rendered. Default: true */
+  showResult?: boolean;
+  /** When true, the container uses compact single-line sizing. Default: false */
+  compact?: boolean;
 }
 
-export default function ExpressionDisplay({ tokens, cursorPos, result, target, onTokenPress }: Props) {
+export default function ExpressionDisplay({ tokens, cursorPos, result, target, onTokenPress, cursorActive = true, showResult = true, compact = false }: Props) {
   const [cursorVisible, setCursorVisible] = useState(true);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => {
-    setCursorVisible(true);
     if (timerRef.current) clearInterval(timerRef.current);
+    if (!cursorActive) { setCursorVisible(false); return; }
+    setCursorVisible(true);
     timerRef.current = setInterval(() => setCursorVisible(v => !v), 530);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [cursorPos, tokens.length]);
+  }, [cursorPos, tokens.length, cursorActive]);
 
   const resultColor =
     result === null ? '#888'
@@ -69,15 +76,17 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, compact && styles.containerCompact]}>
       <View style={styles.exprRow}>
         {exprContent}
       </View>
-      <View style={styles.resultRow}>
-        <Text style={[styles.result, { color: resultColor }]}>
-          {result !== null ? `= ${result}` : ' '}
-        </Text>
-      </View>
+      {showResult && (
+        <View style={styles.resultRow}>
+          <Text style={[styles.result, { color: resultColor }]}>
+            {result !== null ? `= ${result}` : ' '}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -90,6 +99,12 @@ const styles = StyleSheet.create({
     minHeight: 116,
     marginBottom: 16,
     justifyContent: 'space-between',
+  },
+  containerCompact: {
+    padding: 6,
+    minHeight: 0,
+    marginBottom: 0,
+    borderRadius: 6,
   },
   exprRow: {
     flexDirection: 'row',

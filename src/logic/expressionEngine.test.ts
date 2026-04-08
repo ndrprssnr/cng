@@ -234,8 +234,8 @@ describe('getLiveResult – only evaluates syntactically complete expressions', 
     expect(getLiveResult([LPAR, num(3), ADD, num(4), RPAR])).toBe(7);
   });
 
-  test('single number token', () => {
-    expect(getLiveResult([num(42)])).toBe(42);
+  test('single number token returns null (no operator)', () => {
+    expect(getLiveResult([num(42)])).toBeNull();
   });
 
   test('empty tokens returns null', () => {
