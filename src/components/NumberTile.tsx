@@ -26,13 +26,13 @@ export default function NumberTile({ tile, onPress, disabled }: Props) {
 
 const styles = StyleSheet.create({
   tile: {
-    width: 64,
-    height: 64,
-    borderRadius: 12,
+    width: 48,
+    height: 48,
+    borderRadius: 10,
     backgroundColor: '#c47500',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 6,
+    margin: 4,
     elevation: 4,
   },
   disabled: {
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   value: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#ffffff',
   },

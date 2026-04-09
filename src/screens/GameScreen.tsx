@@ -16,7 +16,7 @@ import ScratchpadScreen from './ScratchpadScreen';
 export default function GameScreen() {
   const { state, dispatch } = useGameState();
   const { state: spState, dispatch: spDispatch } = useScratchpadState(state.tiles, state.target);
-  const [mode, setMode] = useState<'classic' | 'scratchpad'>('classic');
+  const [mode, setMode] = useState<'classic' | 'scratchpad'>('scratchpad');
 
   const submitEnabled = canSubmit(state.expression, state.result, state.tiles);
 
