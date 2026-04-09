@@ -1,9 +1,8 @@
-import { useReducer, useEffect } from 'react';
+import { useReducer } from 'react';
 import { NumberTileData, ExpressionToken, BestSolution } from '../types/game';
 import { ScratchpadState, ScratchpadAction, ScratchLine, ResultTile } from '../types/scratchpad';
 import { getLiveResult } from '../logic/expressionEngine';
 import { computeScore } from '../logic/validation';
-import { solve } from '../logic/solver';
 import { buildTiles } from '../logic/gameSetup';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -439,25 +438,7 @@ export function useScratchpadState(tiles: NumberTileData[], target: number) {
     }
   );
 
-  // Run solver async so UI renders first; re-runs on each new game via state.gameId
-  useEffect(() => {
-    const numbers = state.tiles.map(t => t.value);
-    const t = state.target;
-    const timer = setTimeout(() => {
-      const solution = solve(numbers, t);
-      dispatch({
-        type: 'SP_SOLUTION_READY',
-        solution: solution ? {
-          expression: solution.expression,
-          result: solution.result,
-          numCount: solution.numCount,
-        } : null,
-        exactSolvable: solution !== null && solution.result === t,
-      });
-    }, 0);
-    return () => clearTimeout(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.gameId]);
+  // Solver result is forwarded by GameScreen via SP_SOLUTION_READY — no solver runs here.
 
   return { state, dispatch };
 }

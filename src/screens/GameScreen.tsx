@@ -27,6 +27,17 @@ export default function GameScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.gameId]);
 
+  // Forward the solver result (computed once in useGameState) to the scratchpad.
+  useEffect(() => {
+    if (state.solving) return;
+    spDispatch({
+      type: 'SP_SOLUTION_READY',
+      solution: state.precomputedSolution,
+      exactSolvable: state.exactSolvable ?? false,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.solving]);
+
   const submitEnabled = canSubmit(state.expression, state.result, state.tiles);
 
   if (mode === 'scratchpad') {
