@@ -9,13 +9,22 @@ import ExpressionDisplay from './ExpressionDisplay';
 interface Props {
   line: ScratchLineData;
   isActive: boolean;
+  isPlaying: boolean;
   target: number;
   resultTile: ResultTile | null;
   resultTileUsed: boolean;
+  lineNumber: number;
+  lineNumberMap: Map<string, number>;
   onTokenPress: (pos: number) => void;
   onActivate: () => void;
   onResultTileTap: () => void;
   onDelete: () => void;
+  onCursorLeft: () => void;
+  onCursorRight: () => void;
+  onBackspace: () => void;
+  onClear: () => void;
+  cursorAtStart: boolean;
+  cursorAtEnd: boolean;
 }
 
 const SWIPE_THRESHOLD = -60;
@@ -23,13 +32,22 @@ const SWIPE_THRESHOLD = -60;
 export default function ScratchLine({
   line,
   isActive,
+  isPlaying,
   target,
   resultTile,
   resultTileUsed,
+  lineNumber,
+  lineNumberMap,
   onTokenPress,
   onActivate,
   onResultTileTap,
   onDelete,
+  onCursorLeft,
+  onCursorRight,
+  onBackspace,
+  onClear,
+  cursorAtStart,
+  cursorAtEnd,
 }: Props) {
   const [swipeRevealed, setSwipeRevealed] = useState(false);
   const translateX = useRef(new Animated.Value(0)).current;
@@ -78,6 +96,7 @@ export default function ScratchLine({
         ]}
         {...(!isWeb ? panResponder.panHandlers : {})}
       >
+        <Text style={styles.lineNum}>{lineNumber}</Text>
         <TouchableOpacity
           style={styles.exprArea}
           onPress={onActivate}
@@ -92,6 +111,7 @@ export default function ScratchLine({
             cursorActive={isActive}
             showResult={false}
             compact
+            lineNumberMap={lineNumberMap}
           />
         </TouchableOpacity>
 
@@ -121,6 +141,29 @@ export default function ScratchLine({
           )}
         </View>
       </Animated.View>
+
+      {isActive && isPlaying && (
+        <View style={styles.inlineBar}>
+          <TouchableOpacity
+            style={[styles.inlineBtn, cursorAtStart && styles.inlineBtnDimmed]}
+            onPress={onCursorLeft} disabled={cursorAtStart} activeOpacity={0.8}
+          >
+            <Text style={styles.inlineBtnText}>◀</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.inlineBtn, cursorAtEnd && styles.inlineBtnDimmed]}
+            onPress={onCursorRight} disabled={cursorAtEnd} activeOpacity={0.8}
+          >
+            <Text style={styles.inlineBtnText}>▶</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.inlineBtn} onPress={onBackspace} activeOpacity={0.8}>
+            <Text style={styles.inlineBtnText}>⌫</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.inlineBtn} onPress={onClear} activeOpacity={0.8}>
+            <Text style={styles.inlineBtnText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -134,7 +177,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    bottom: 6,
+    height: 46,
     width: 56,
     backgroundColor: '#b71c1c',
     borderTopRightRadius: 10,
@@ -159,6 +202,14 @@ const styles = StyleSheet.create({
   },
   exprArea: {
     flex: 1,
+  },
+  lineNum: {
+    fontSize: 11,
+    color: '#546e7a',
+    width: 16,
+    textAlign: 'right',
+    marginRight: 6,
+    alignSelf: 'center',
   },
   rightCol: {
     flexDirection: 'row',
@@ -195,5 +246,26 @@ const styles = StyleSheet.create({
   },
   trashText: {
     fontSize: 16,
+  },
+  inlineBar: {
+    flexDirection: 'row',
+    gap: 6,
+    marginTop: 4,
+    marginBottom: 2,
+  },
+  inlineBtn: {
+    flex: 1,
+    backgroundColor: '#263238',
+    borderRadius: 8,
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  inlineBtnDimmed: {
+    opacity: 0.3,
+  },
+  inlineBtnText: {
+    color: '#eceff1',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 
 import { ExpressionToken } from '../types/game';
 
@@ -15,9 +15,11 @@ interface Props {
   showResult?: boolean;
   /** When true, the container uses compact single-line sizing. Default: false */
   compact?: boolean;
+  /** Maps lineId → 1-based line number; used to render subscript on result-tile tokens */
+  lineNumberMap?: Map<string, number>;
 }
 
-export default function ExpressionDisplay({ tokens, cursorPos, result, target, onTokenPress, cursorActive = true, showResult = true, compact = false }: Props) {
+export default function ExpressionDisplay({ tokens, cursorPos, result, target, onTokenPress, cursorActive = true, showResult = true, compact = false, lineNumberMap }: Props) {
   const [cursorVisible, setCursorVisible] = useState(true);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -60,8 +62,19 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
     );
 
     tokens.forEach((token, index) => {
+      const isResultRef =
+        token.type === 'number' && token.tileId && !token.tileId.startsWith('num-');
+      const srcNum = isResultRef && lineNumberMap
+        ? (lineNumberMap.get(token.tileId!) ?? null)
+        : null;
+
       parts.push(
-        <Text key={`t-${index}`} style={[styles.token, token.stale && styles.tokenStale]}>{token.display}</Text>
+        <View key={`t-${index}`} style={styles.tokenWrapper}>
+          <Text style={[styles.token, token.stale && styles.tokenStale]}>{token.display}</Text>
+          {srcNum !== null && (
+            <Text style={[styles.tokenSub, token.stale && styles.tokenSubStale]}>{srcNum}</Text>
+          )}
+        </View>
       );
       // Tappable gap after each token (cursor position index + 1)
       const isActive = cursorPos === index + 1;
@@ -119,6 +132,19 @@ const styles = StyleSheet.create({
   tokenStale: {
     color: '#e53935',
     textDecorationLine: 'line-through',
+  },
+  tokenWrapper: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  tokenSub: {
+    fontSize: 9,
+    color: '#546e7a',
+    lineHeight: 14,
+    marginBottom: 1,
+  },
+  tokenSubStale: {
+    color: '#b71c1c',
   },
   gap: {
     paddingHorizontal: 2,

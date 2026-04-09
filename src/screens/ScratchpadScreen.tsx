@@ -7,7 +7,6 @@ import { ScratchpadState, ScratchpadAction } from '../types/scratchpad';
 import TargetDisplay from '../components/TargetDisplay';
 import NumberTile from '../components/NumberTile';
 import OperatorButton from '../components/OperatorButton';
-import ActionButtons from '../components/ActionButtons';
 import ResultBanner from '../components/ResultBanner';
 import ScratchLine from '../components/ScratchLine';
 
@@ -18,7 +17,6 @@ interface Props {
 }
 
 export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) {
-  const activeLine = state.lines.find(l => l.id === state.activeLineId);
   const isPlaying = state.phase === 'playing';
 
   return (
@@ -26,6 +24,42 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
       {/* Fixed header — does not scroll */}
       <View style={styles.header}>
         <TargetDisplay target={state.target} exactSolvable={state.exactSolvable} compact />
+
+        {/* Number tiles — single row */}
+        <View style={styles.tilesRow}>
+          {state.tiles.map(tile => (
+            <NumberTile
+              key={tile.id}
+              tile={tile}
+              onPress={id => dispatch({ type: 'SP_TAP_TILE', tileId: id })}
+              disabled={tile.used || !isPlaying}
+            />
+          ))}
+        </View>
+
+        {/* Operators */}
+        {isPlaying && (
+          <View style={styles.operatorsRow}>
+            {(['+', '-', '×', '÷'] as Operator[]).map(op => (
+              <OperatorButton
+                key={op}
+                operator={op}
+                onPress={o => dispatch({ type: 'SP_TAP_OPERATOR', operator: o })}
+                disabled={false}
+              />
+            ))}
+            <View style={styles.parenGroup}>
+              {(['(', ')'] as Operator[]).map(op => (
+                <OperatorButton
+                  key={op}
+                  operator={op}
+                  onPress={o => dispatch({ type: 'SP_TAP_OPERATOR', operator: o })}
+                  disabled={false}
+                />
+              ))}
+            </View>
+          </View>
+        )}
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
@@ -33,23 +67,35 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
 
           {/* Scratch lines */}
           <View style={styles.linesArea}>
-            {state.lines.map(line => {
-              const rt = state.resultTiles.find(r => r.sourceLineId === line.id) ?? null;
-              return (
-                <ScratchLine
-                  key={line.id}
-                  line={line}
-                  isActive={line.id === state.activeLineId}
-                  target={state.target}
-                  resultTile={rt}
-                  resultTileUsed={rt?.used ?? false}
-                  onActivate={() => dispatch({ type: 'SP_SET_ACTIVE_LINE', lineId: line.id })}
-                  onTokenPress={pos => dispatch({ type: 'SP_SET_CURSOR', lineId: line.id, pos })}
-                  onResultTileTap={() => rt && dispatch({ type: 'SP_TAP_RESULT', resultId: rt.id })}
-                  onDelete={() => dispatch({ type: 'SP_DELETE_LINE', lineId: line.id })}
-                />
-              );
-            })}
+            {(() => {
+              const lineNumberMap = new Map(state.lines.map((l, i) => [l.id, i + 1]));
+              return state.lines.map(line => {
+                const rt = state.resultTiles.find(r => r.sourceLineId === line.id) ?? null;
+                return (
+                  <ScratchLine
+                    key={line.id}
+                    line={line}
+                    isActive={line.id === state.activeLineId}
+                    isPlaying={isPlaying}
+                    target={state.target}
+                    resultTile={rt}
+                    resultTileUsed={rt?.used ?? false}
+                    lineNumber={lineNumberMap.get(line.id) ?? 0}
+                    lineNumberMap={lineNumberMap}
+                    onActivate={() => dispatch({ type: 'SP_SET_ACTIVE_LINE', lineId: line.id })}
+                    onTokenPress={pos => dispatch({ type: 'SP_SET_CURSOR', lineId: line.id, pos })}
+                    onResultTileTap={() => rt && dispatch({ type: 'SP_TAP_RESULT', resultId: rt.id })}
+                    onDelete={() => dispatch({ type: 'SP_DELETE_LINE', lineId: line.id })}
+                    onCursorLeft={() => dispatch({ type: 'SP_MOVE_CURSOR', delta: -1 })}
+                    onCursorRight={() => dispatch({ type: 'SP_MOVE_CURSOR', delta: 1 })}
+                    onBackspace={() => dispatch({ type: 'SP_BACKSPACE' })}
+                    onClear={() => dispatch({ type: 'SP_CLEAR_LINE' })}
+                    cursorAtStart={line.cursorPos === 0}
+                    cursorAtEnd={line.cursorPos === line.expression.length}
+                  />
+                );
+              });
+            })()}
 
             {isPlaying && (
               <TouchableOpacity
@@ -62,55 +108,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
             )}
           </View>
 
-          {/* Number tiles */}
-          <View style={styles.tilesGrid}>
-            {[0, 1].map(row => (
-              <View key={row} style={styles.tilesRow}>
-                {state.tiles.slice(row * 3, row * 3 + 3).map(tile => (
-                  <NumberTile
-                    key={tile.id}
-                    tile={tile}
-                    onPress={id => dispatch({ type: 'SP_TAP_TILE', tileId: id })}
-                    disabled={tile.used || !isPlaying}
-                  />
-                ))}
-              </View>
-            ))}
-          </View>
 
-          {isPlaying && (
-            <View style={styles.operatorsRow}>
-              {(['+', '-', '×', '÷'] as Operator[]).map(op => (
-                <OperatorButton
-                  key={op}
-                  operator={op}
-                  onPress={o => dispatch({ type: 'SP_TAP_OPERATOR', operator: o })}
-                  disabled={false}
-                />
-              ))}
-              <View style={styles.parenGroup}>
-                {(['(', ')'] as Operator[]).map(op => (
-                  <OperatorButton
-                    key={op}
-                    operator={op}
-                    onPress={o => dispatch({ type: 'SP_TAP_OPERATOR', operator: o })}
-                    disabled={false}
-                  />
-                ))}
-              </View>
-            </View>
-          )}
-
-          {isPlaying && activeLine && (
-            <ActionButtons
-              onClear={() => dispatch({ type: 'SP_CLEAR_LINE' })}
-              onBackspace={() => dispatch({ type: 'SP_BACKSPACE' })}
-              onCursorLeft={() => dispatch({ type: 'SP_MOVE_CURSOR', delta: -1 })}
-              onCursorRight={() => dispatch({ type: 'SP_MOVE_CURSOR', delta: 1 })}
-              cursorAtStart={activeLine.cursorPos === 0}
-              cursorAtEnd={activeLine.cursorPos === activeLine.expression.length}
-            />
-          )}
 
           {state.phase === 'submitted' && state.score !== null && (
             (() => {
@@ -166,6 +164,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingTop: 10,
+    paddingBottom: 4,
     backgroundColor: '#0d1117',
   },
   scroll: {
@@ -193,19 +192,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  tilesGrid: {
-    alignItems: 'center',
-    marginBottom: 8,
-  },
   tilesRow: {
     flexDirection: 'row',
+    justifyContent: 'center',
     flexWrap: 'nowrap',
+    marginTop: 6,
   },
   operatorsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   parenGroup: {
     flexDirection: 'row',
