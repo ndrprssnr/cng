@@ -369,7 +369,7 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
       let bestSolution: BestSolution | null = null;
       if (pre) {
         if (userResult === state.target && pre.result === state.target) {
-          const numCount = bestLine.expression.filter(t => t.type === 'number').length;
+          const numCount = state.tiles.filter(t => t.used).length;
           if (pre.numCount < numCount) bestSolution = pre;
         } else if (userResult !== state.target) {
           bestSolution = pre;
@@ -411,7 +411,7 @@ function checkWinAndAutoLine(state: ScratchpadState): ScratchpadState {
     const pre = state.precomputedSolution;
     let bestSolution: BestSolution | null = null;
     if (pre && pre.result === state.target) {
-      const numCount = activeLine.expression.filter(t => t.type === 'number').length;
+      const numCount = state.tiles.filter(t => t.used).length;
       if (pre.numCount < numCount) bestSolution = pre;
     }
     return { ...state, phase: 'submitted', score, bestSolution };
