@@ -25,29 +25,3 @@ export interface BestSolution {
   result: number;
   numCount: number;
 }
-
-export interface GameState {
-  phase: 'playing' | 'submitted';
-  solving: boolean;                            // true while solver is running in the background
-  gameId: number;                              // incremented on each NEW_GAME; used to sync modes
-  tiles: NumberTileData[];
-  target: number;
-  exactSolvable: boolean | null;               // null until solver completes
-  precomputedSolution: BestSolution | null;    // solver result computed at game start
-  expression: ExpressionToken[];
-  cursorPos: number;     // insertion point: 0 = before first token, expression.length = end
-  result: number | null; // live-evaluated value, recomputed in reducer
-  score: ScoreResult | null;
-  bestSolution: BestSolution | null; // filled after submit
-}
-
-export type GameAction =
-  | { type: 'TAP_TILE'; tileId: string }
-  | { type: 'TAP_OPERATOR'; operator: Operator }
-  | { type: 'BACKSPACE' }
-  | { type: 'CLEAR' }
-  | { type: 'MOVE_CURSOR'; delta: -1 | 1 }
-  | { type: 'SET_CURSOR'; pos: number }
-  | { type: 'SUBMIT' }
-  | { type: 'NEW_GAME' }
-  | { type: 'SOLUTION_READY'; solution: BestSolution | null; exactSolvable: boolean };

@@ -20,7 +20,7 @@ export interface ScratchpadState {
   phase: 'playing' | 'submitted';
   solving: boolean;
   gameId: number;                      // increments on each new game, used to re-run solver
-  tiles: NumberTileData[];            // original 6 tiles, independent usage from Classic
+  tiles: NumberTileData[];
   target: number;
   exactSolvable: boolean | null;
   precomputedSolution: BestSolution | null;
@@ -44,5 +44,5 @@ export type ScratchpadAction =
   | { type: 'SP_ADD_LINE' }
   | { type: 'SP_DELETE_LINE'; lineId: string }
   | { type: 'SP_SUBMIT' }
-  | { type: 'SP_NEW_GAME'; tiles: NumberTileData[]; target: number }
-  | { type: 'SP_SOLUTION_READY'; solution: BestSolution | null; exactSolvable: boolean };
+  | { type: 'SP_NEW_GAME' }
+  | { type: 'SP_SOLUTION_READY'; solution: BestSolution | null; exactSolvable: boolean; gameId: number };

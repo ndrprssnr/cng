@@ -1,9 +1,11 @@
-import { useReducer } from 'react';
-import { NumberTileData, ExpressionToken, BestSolution } from '../types/game';
-import { ScratchpadState, ScratchpadAction, ScratchLine, ResultTile } from '../types/scratchpad';
-import { getLiveResult } from '../logic/expressionEngine';
+import { BestSolution, ExpressionToken, NumberTileData } from '../types/game';
+import { ResultTile, ScratchLine, ScratchpadAction, ScratchpadState } from '../types/scratchpad';
+import { buildTiles, generateTarget } from '../logic/gameSetup';
+import { useEffect, useReducer } from 'react';
+
 import { computeScore } from '../logic/validation';
-import { buildTiles } from '../logic/gameSetup';
+import { getLiveResult } from '../logic/expressionEngine';
+import { solve } from '../logic/solver';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -150,13 +152,15 @@ function recomputeLine(
   });
 }
 
-function createInitialState(tiles: NumberTileData[], target: number, gameId: number): ScratchpadState {
+function createInitialState(gameId: number): ScratchpadState {
+  const tiles = buildTiles();
+  const target = generateTarget();
   const firstLine = emptyLine();
   return {
     phase: 'playing',
     solving: true,
     gameId,
-    tiles: tiles.map(t => ({ ...t, used: false })),
+    tiles,
     target,
     exactSolvable: null,
     precomputedSolution: null,
@@ -376,7 +380,7 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
 
     case 'SP_NEW_GAME': {
       _lineCounter = 0;
-      return createInitialState(action.tiles, action.target, state.gameId + 1);
+      return createInitialState(state.gameId + 1);
     }
 
     case 'SP_SOLUTION_READY': {
@@ -428,17 +432,36 @@ function checkWinAndAutoLine(state: ScratchpadState): ScratchpadState {
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
-export function useScratchpadState(tiles: NumberTileData[], target: number) {
+export function useScratchpadState() {
   const [state, dispatch] = useReducer(
     reducer,
     undefined,
     () => {
       _lineCounter = 0;
-      return createInitialState(buildTiles(tiles.map(t => t.value)), target, 0);
+      return createInitialState(0);
     }
   );
 
-  // Solver result is forwarded by GameScreen via SP_SOLUTION_READY — no solver runs here.
+  // Run the solver asynchronously whenever a new game starts.
+  useEffect(() => {
+    const numbers = state.tiles.map(t => t.value);
+    const target = state.target;
+    const timer = setTimeout(() => {
+      const solution = solve(numbers, target);
+      dispatch({
+        type: 'SP_SOLUTION_READY',
+        solution: solution ? {
+          expression: solution.expression,
+          result: solution.result,
+          numCount: solution.numCount,
+        } : null,
+        exactSolvable: solution !== null && solution.result === target,
+        gameId: state.gameId,
+      });
+    }, 0);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.gameId]);
 
   return { state, dispatch };
 }

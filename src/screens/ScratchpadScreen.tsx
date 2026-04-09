@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, SafeAreaView, ScrollView, TouchableOpacity, Text, StyleSheet,
+  View, ScrollView, TouchableOpacity, Text, StyleSheet,
 } from 'react-native';
 import { Operator } from '../types/game';
 import { ScratchpadState, ScratchpadAction } from '../types/scratchpad';
@@ -20,7 +20,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
   const isPlaying = state.phase === 'playing';
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={styles.safe}>
       {/* Fixed header — does not scroll */}
       <View style={styles.header}>
         <TargetDisplay target={state.target} exactSolvable={state.exactSolvable} compact />
@@ -153,7 +153,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
           </TouchableOpacity>
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

@@ -30,8 +30,9 @@ export function generateTarget(): number {
   return Math.floor(Math.random() * 900) + 100; // 100–999
 }
 
-export function buildTiles(numbers: number[]): NumberTileData[] {
-  return numbers.map((value, index) => ({
+export function buildTiles(numbers?: number[]): NumberTileData[] {
+  const nums = numbers ?? generateNumbers();
+  return nums.map((value, index) => ({
     id: `num-${index}`,
     value,
     used: false,
