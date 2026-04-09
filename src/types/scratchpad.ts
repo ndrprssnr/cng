@@ -14,16 +14,12 @@ export interface ScratchLine {
   expression: ExpressionToken[];
   cursorPos: number;
   result: number | null;
-  /**
-   * Locked when a result tile this line consumes has changed value.
-   * A locked line is read-only and displayed greyed out.
-   */
-  locked: boolean;
 }
 
 export interface ScratchpadState {
   phase: 'playing' | 'submitted';
   solving: boolean;
+  gameId: number;                      // increments on each new game, used to re-run solver
   tiles: NumberTileData[];            // original 6 tiles, independent usage from Classic
   target: number;
   exactSolvable: boolean | null;

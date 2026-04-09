@@ -61,7 +61,7 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
 
     tokens.forEach((token, index) => {
       parts.push(
-        <Text key={`t-${index}`} style={styles.token}>{token.display}</Text>
+        <Text key={`t-${index}`} style={[styles.token, token.stale && styles.tokenStale]}>{token.display}</Text>
       );
       // Tappable gap after each token (cursor position index + 1)
       const isActive = cursorPos === index + 1;
@@ -115,6 +115,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#e0e0e0',
     fontFamily: 'monospace',
+  },
+  tokenStale: {
+    color: '#e53935',
+    textDecorationLine: 'line-through',
   },
   gap: {
     paddingHorizontal: 2,

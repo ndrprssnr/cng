@@ -23,10 +23,13 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
 
   return (
     <SafeAreaView style={styles.safe}>
+      {/* Fixed header — does not scroll */}
+      <View style={styles.header}>
+        <TargetDisplay target={state.target} exactSolvable={state.exactSolvable} compact />
+      </View>
+
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
-
-          <TargetDisplay target={state.target} exactSolvable={state.exactSolvable} />
 
           {/* Scratch lines */}
           <View style={styles.linesArea}>
@@ -111,7 +114,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
 
           {state.phase === 'submitted' && state.score !== null && (
             (() => {
-              const candidateLines = state.lines.filter(l => l.result !== null && !l.locked);
+              const candidateLines = state.lines.filter(l => l.result !== null);
               const bestLine = candidateLines.length > 0
                 ? candidateLines.reduce((best, l) => {
                     const bestDiff = Math.abs((best.result as number) - state.target);
@@ -138,10 +141,10 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
           <TouchableOpacity
             style={[
               styles.submit,
-              !state.lines.some(l => l.result !== null && !l.locked) && styles.submitDisabled,
+              !state.lines.some(l => l.result !== null) && styles.submitDisabled,
             ]}
             onPress={() => dispatch({ type: 'SP_SUBMIT' })}
-            disabled={!state.lines.some(l => l.result !== null && !l.locked)}
+            disabled={!state.lines.some(l => l.result !== null)}
             activeOpacity={0.8}
           >
             <Text style={styles.submitText}>Submit</Text>
@@ -160,13 +163,18 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
   },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    backgroundColor: '#0d1117',
+  },
   scroll: {
     flexGrow: 1,
   },
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 10,
+    paddingTop: 6,
   },
   linesArea: {
     marginBottom: 12,

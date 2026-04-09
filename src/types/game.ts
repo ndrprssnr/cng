@@ -12,6 +12,7 @@ export interface ExpressionToken {
   tileId?: string;   // links number token back to its tile (type === 'number')
   value?: number;    // set when type === 'number'
   operator?: Operator; // set when type === 'operator'
+  stale?: boolean;   // true when a result-tile reference whose source no longer exists
 }
 
 export interface ScoreResult {

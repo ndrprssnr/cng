@@ -54,13 +54,12 @@ export default function ScratchLine({
   ).current;
 
   const resultColor =
-    line.locked ? '#e53935'
-    : line.result === null ? '#888'
+    line.result === null ? '#888'
     : line.result === target ? '#4caf50'
     : Math.abs(line.result - target) <= 10 ? '#ff9800'
     : '#90caf9';
 
-  const canTapResultTile = resultTile !== null && !resultTileUsed && !line.locked;
+  const canTapResultTile = resultTile !== null && !resultTileUsed;
 
   return (
     <View style={styles.wrapper}>
@@ -75,7 +74,6 @@ export default function ScratchLine({
         style={[
           styles.row,
           isActive && styles.rowActive,
-          line.locked && styles.rowLocked,
           !isWeb && { transform: [{ translateX }] },
         ]}
         {...(!isWeb ? panResponder.panHandlers : {})}
@@ -87,11 +85,11 @@ export default function ScratchLine({
         >
           <ExpressionDisplay
             tokens={line.expression}
-            cursorPos={line.locked ? -1 : line.cursorPos}
+            cursorPos={line.cursorPos}
             result={line.result}
             target={target}
             onTokenPress={pos => { onActivate(); onTokenPress(pos); }}
-            cursorActive={isActive && !line.locked}
+            cursorActive={isActive}
             showResult={false}
             compact
           />
@@ -104,7 +102,6 @@ export default function ScratchLine({
               style={[
                 styles.resultTile,
                 resultTileUsed && styles.resultTileUsed,
-                line.locked && styles.resultTileLocked,
               ]}
               onPress={onResultTileTap}
               disabled={!canTapResultTile}
@@ -135,10 +132,10 @@ const styles = StyleSheet.create({
   },
   deleteBack: {
     position: 'absolute',
-    right: 0,
+    right: 4,
     top: 0,
-    bottom: 0,
-    width: 60,
+    bottom: 6,
+    width: 56,
     backgroundColor: '#b71c1c',
     borderRadius: 10,
     justifyContent: 'center',
@@ -158,9 +155,6 @@ const styles = StyleSheet.create({
   },
   rowActive: {
     borderColor: '#1565c0',
-  },
-  rowLocked: {
-    opacity: 0.45,
   },
   exprArea: {
     flex: 1,
@@ -183,9 +177,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   resultTileUsed: {
-    opacity: 0.35,
-  },
-  resultTileLocked: {
     opacity: 0.35,
   },
   resultTileText: {
