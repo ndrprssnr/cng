@@ -37,6 +37,7 @@ export type ScratchpadAction =
   | { type: 'SP_TAP_OPERATOR'; operator: Operator }
   | { type: 'SP_BACKSPACE' }
   | { type: 'SP_CLEAR_LINE' }
+  | { type: 'SP_RESET' }
   | { type: 'SP_MOVE_CURSOR'; delta: -1 | 1 }
   | { type: 'SP_SET_CURSOR'; lineId: string; pos: number }
   | { type: 'SP_SET_ACTIVE_LINE'; lineId: string }

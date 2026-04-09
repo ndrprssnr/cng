@@ -266,6 +266,20 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
     }
 
     case 'SP_CLEAR_LINE': {
+      // Clear the active line's expression and free its tiles
+      const activeLine = state.lines.find(l => l.id === state.activeLineId);
+      if (!activeLine) return state;
+      let tiles = freeTilesForLine(activeLine, state.tiles);
+      const clearedLines = state.lines.map(l =>
+        l.id === state.activeLineId
+          ? { ...l, expression: [], cursorPos: 0, result: null }
+          : l
+      );
+      const { lines: updated, resultTiles } = propagateUpdates(clearedLines);
+      return { ...state, tiles, lines: updated, resultTiles };
+    }
+
+    case 'SP_RESET': {
       // Reset the entire scratchpad: free all tiles, start with one empty line
       const newLine = emptyLine();
       return {

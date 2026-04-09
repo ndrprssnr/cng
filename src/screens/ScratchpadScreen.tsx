@@ -40,7 +40,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
         {/* Operators */}
         {isPlaying && (
           <View style={styles.operatorsRow}>
-            {(['+', '-', '×', '÷'] as Operator[]).map(op => (
+            {(['+', '-', '×', '÷', '(', ')'] as Operator[]).map(op => (
               <OperatorButton
                 key={op}
                 operator={op}
@@ -48,16 +48,6 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                 disabled={false}
               />
             ))}
-            <View style={styles.parenGroup}>
-              {(['(', ')'] as Operator[]).map(op => (
-                <OperatorButton
-                  key={op}
-                  operator={op}
-                  onPress={o => dispatch({ type: 'SP_TAP_OPERATOR', operator: o })}
-                  disabled={false}
-                />
-              ))}
-            </View>
           </View>
         )}
       </View>
@@ -104,6 +94,16 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                 activeOpacity={0.8}
               >
                 <Text style={styles.addLineText}>+ Add line</Text>
+              </TouchableOpacity>
+            )}
+
+            {isPlaying && (
+              <TouchableOpacity
+                style={styles.resetBtn}
+                onPress={() => dispatch({ type: 'SP_RESET' })}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.resetBtnText}>Reset</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -192,21 +192,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+  resetBtn: {
+    marginTop: 6,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#b71c1c',
+    alignItems: 'center',
+  },
+  resetBtnText: {
+    color: '#e57373',
+    fontSize: 13,
+    fontWeight: '600',
+  },
   tilesRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     flexWrap: 'nowrap',
     marginTop: 6,
   },
   operatorsRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     flexWrap: 'wrap',
     marginBottom: 4,
-  },
-  parenGroup: {
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
   },
   footer: {
     paddingHorizontal: 20,
