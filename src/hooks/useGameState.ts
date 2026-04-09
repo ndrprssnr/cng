@@ -5,11 +5,12 @@ import { getLiveResult, evaluateExpression } from '../logic/expressionEngine';
 import { canSubmit, computeScore } from '../logic/validation';
 import { solve } from '../logic/solver';
 
-function createInitialState(): GameState {
+function createInitialState(gameId = 0): GameState {
   const numbers = generateNumbers();
   return {
     phase: 'playing',
     solving: true,
+    gameId,
     tiles: buildTiles(numbers),
     target: generateTarget(),
     exactSolvable: null,
@@ -152,7 +153,7 @@ function reducer(state: GameState, action: GameAction): GameState {
     }
 
     case 'NEW_GAME': {
-      return createInitialState();
+      return createInitialState(state.gameId + 1);
     }
 
     case 'SOLUTION_READY': {
@@ -190,7 +191,7 @@ export function useGameState() {
     }, 0);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.phase === 'playing' && state.solving]);
+  }, [state.gameId]);
 
   return { state, dispatch };
 }

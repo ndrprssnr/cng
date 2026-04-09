@@ -29,6 +29,7 @@ export interface BestSolution {
 export interface GameState {
   phase: 'playing' | 'submitted';
   solving: boolean;                            // true while solver is running in the background
+  gameId: number;                              // incremented on each NEW_GAME; used to sync modes
   tiles: NumberTileData[];
   target: number;
   exactSolvable: boolean | null;               // null until solver completes

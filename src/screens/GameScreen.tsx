@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, SafeAreaView, ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useGameState } from '../hooks/useGameState';
 import { useScratchpadState } from '../hooks/useScratchpadState';
@@ -18,6 +18,15 @@ export default function GameScreen() {
   const { state: spState, dispatch: spDispatch } = useScratchpadState(state.tiles, state.target);
   const [mode, setMode] = useState<'classic' | 'scratchpad'>('scratchpad');
 
+  // Whenever the classic game changes (new game started from either mode),
+  // sync the scratchpad to the same tiles and target.
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    spDispatch({ type: 'SP_NEW_GAME', tiles: state.tiles, target: state.target });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.gameId]);
+
   const submitEnabled = canSubmit(state.expression, state.result, state.tiles);
 
   if (mode === 'scratchpad') {
@@ -29,10 +38,7 @@ export default function GameScreen() {
         <ScratchpadScreen
           state={spState}
           dispatch={spDispatch}
-          onNewGame={() => {
-            dispatch({ type: 'NEW_GAME' });
-            spDispatch({ type: 'SP_NEW_GAME', tiles: state.tiles, target: state.target });
-          }}
+          onNewGame={() => dispatch({ type: 'NEW_GAME' })}
         />
       </SafeAreaView>
     );

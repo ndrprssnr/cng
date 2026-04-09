@@ -266,12 +266,15 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
     }
 
     case 'SP_CLEAR_LINE': {
-      const activeLine = state.lines.find(l => l.id === state.activeLineId);
-      if (!activeLine) return state;
-      const tiles = freeTilesForLine(activeLine, state.tiles);
-      const lines = recomputeLine(state.lines, state.activeLineId, [], 0);
-      const { lines: updated, resultTiles } = propagateUpdates(lines);
-      return { ...state, tiles, lines: updated, resultTiles };
+      // Reset the entire scratchpad: free all tiles, start with one empty line
+      const newLine = emptyLine();
+      return {
+        ...state,
+        tiles: state.tiles.map(t => ({ ...t, used: false })),
+        lines: [newLine],
+        activeLineId: newLine.id,
+        resultTiles: [],
+      };
     }
 
     case 'SP_MOVE_CURSOR': {
