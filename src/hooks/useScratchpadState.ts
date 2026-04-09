@@ -398,24 +398,12 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
 }
 
 /**
- * After any expression change on the active line, check:
- * 1. If target hit → auto-submit
- * 2. If a valid result exists and the active line is the last non-empty one → auto-append
+ * After any expression change on the active line, auto-append a new empty line
+ * when the active line has a valid result and is the last non-empty one.
  */
 function checkWinAndAutoLine(state: ScratchpadState): ScratchpadState {
   const activeLine = state.lines.find(l => l.id === state.activeLineId);
   if (!activeLine) return state;
-
-  if (activeLine.result === state.target) {
-    const score = computeScore(activeLine.result, state.target);
-    const pre = state.precomputedSolution;
-    let bestSolution: BestSolution | null = null;
-    if (pre && pre.result === state.target) {
-      const numCount = state.tiles.filter(t => t.used).length;
-      if (pre.numCount < numCount) bestSolution = pre;
-    }
-    return { ...state, phase: 'submitted', score, bestSolution };
-  }
 
   const lastLine = state.lines[state.lines.length - 1];
   if (
