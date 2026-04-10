@@ -26,14 +26,14 @@ export default function OperatorButton({ operator, onPress, disabled }: Props) {
 
 const styles = StyleSheet.create({
   button: {
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
     borderRadius: 8,
     backgroundColor: '#2d5a8e',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 3,
-    elevation: 3,
+    margin: 4,
+    elevation: 4,
   },
   disabled: {
     backgroundColor: '#333',
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   label: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#ffffff',
   },
