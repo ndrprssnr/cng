@@ -28,7 +28,7 @@ export function generateNumbers(): number[] {
 }
 
 export function generateTarget(): number {
-  return Math.floor(Math.random() * 900) + 100; // 100–999
+  return Math.floor(Math.random() * 899) + 101; // 101–999
 }
 
 export function buildTiles(numbers?: number[]): NumberTileData[] {
