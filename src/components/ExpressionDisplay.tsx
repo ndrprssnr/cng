@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { ExpressionToken } from '../types/game';
+import { useTheme } from '../theme/ThemeContext';
 
 interface Props {
   tokens: ExpressionToken[];
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function ExpressionDisplay({ tokens, cursorPos, result, target, onTokenPress, cursorActive = true, lineNumberMap }: Props) {
+  const { theme } = useTheme();
   const [cursorVisible, setCursorVisible] = useState(true);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -26,13 +28,13 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
   }, [cursorPos, tokens.length, cursorActive]);
 
   const resultColor =
-    result === null ? '#888'
-    : result === target ? '#4caf50'
-    : Math.abs(result - target) <= 10 ? '#ff9800'
-    : '#90caf9';
+    result === null ? theme.resultNull
+    : result === target ? theme.resultExact
+    : Math.abs(result - target) <= 10 ? theme.resultClose
+    : theme.resultFar;
 
   const cursor = (
-    <Text key="cursor" style={[styles.tick, styles.tickActive, !cursorVisible && styles.tickHidden]}>
+    <Text key="cursor" style={[styles.tick, { color: theme.cursorActive }, !cursorVisible && styles.tickHidden]}>
       |
     </Text>
   );
@@ -42,7 +44,7 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
     exprContent = (
       <>
         {cursor}
-        <Text style={styles.placeholder}>Tap numbers and operators...</Text>
+        <Text style={[styles.placeholder, { color: theme.placeholder }]}>Tap numbers and operators...</Text>
       </>
     );
   } else {
@@ -50,7 +52,7 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
 
     parts.push(
       <TouchableOpacity key="gap-0" onPress={() => onTokenPress(0)} style={styles.gap}>
-        <Text style={[styles.tick, cursorPos === 0 && (cursorVisible ? styles.tickActive : styles.tickHidden)]}>|</Text>
+        <Text style={[styles.tick, { color: cursorPos === 0 ? (cursorVisible ? theme.cursorActive : 'transparent') : theme.cursorDefault }]}>|</Text>
       </TouchableOpacity>
     );
 
@@ -63,16 +65,16 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
 
       parts.push(
         <View key={`t-${index}`} style={styles.tokenWrapper}>
-          <Text style={[styles.token, token.stale && styles.tokenStale]}>{token.display}</Text>
+          <Text style={[styles.token, { color: token.stale ? theme.tokenStale : theme.tokenText }, token.stale && styles.tokenStale]}>{token.display}</Text>
           {srcNum !== null && (
-            <Text style={[styles.tokenSub, token.stale && styles.tokenSubStale]}>{srcNum}</Text>
+            <Text style={[styles.tokenSub, { color: token.stale ? theme.tokenSubStale : theme.tokenSubColor }]}>{srcNum}</Text>
           )}
         </View>
       );
       const isActive = cursorPos === index + 1;
       parts.push(
         <TouchableOpacity key={`gap-${index + 1}`} onPress={() => onTokenPress(index + 1)} style={styles.gap}>
-          <Text style={[styles.tick, isActive && (cursorVisible ? styles.tickActive : styles.tickHidden)]}>|</Text>
+          <Text style={[styles.tick, { color: isActive ? (cursorVisible ? theme.cursorActive : 'transparent') : theme.cursorDefault }]}>|</Text>
         </TouchableOpacity>
       );
     });
@@ -101,11 +103,9 @@ const styles = StyleSheet.create({
   },
   token: {
     fontSize: 20,
-    color: '#e0e0e0',
     fontFamily: 'monospace',
   },
   tokenStale: {
-    color: '#e53935',
     textDecorationLine: 'line-through',
   },
   tokenWrapper: {
@@ -114,12 +114,8 @@ const styles = StyleSheet.create({
   },
   tokenSub: {
     fontSize: 9,
-    color: '#546e7a',
     lineHeight: 14,
     marginBottom: 1,
-  },
-  tokenSubStale: {
-    color: '#b71c1c',
   },
   gap: {
     paddingHorizontal: 2,
@@ -128,18 +124,13 @@ const styles = StyleSheet.create({
   },
   tick: {
     fontSize: 20,
-    color: 'rgba(255, 255, 255, 0.1)',
     fontWeight: '200',
     fontFamily: 'monospace',
-  },
-  tickActive: {
-    color: '#64b5f6',
   },
   tickHidden: {
     opacity: 0,
   },
   placeholder: {
-    color: '#555',
     fontStyle: 'italic',
     fontSize: 15,
   },

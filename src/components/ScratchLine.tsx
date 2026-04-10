@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { ScratchLine as ScratchLineData, ResultTile } from '../types/scratchpad';
 import ExpressionDisplay from './ExpressionDisplay';
+import { useTheme } from '../theme/ThemeContext';
 
 interface Props {
   line: ScratchLineData;
@@ -49,6 +50,7 @@ export default function ScratchLine({
   cursorAtStart,
   cursorAtEnd,
 }: Props) {
+  const { theme } = useTheme();
   const [swipeRevealed, setSwipeRevealed] = useState(false);
   const translateX = useRef(new Animated.Value(0)).current;
   const isWeb = Platform.OS === 'web';
@@ -72,10 +74,10 @@ export default function ScratchLine({
   ).current;
 
   const resultColor =
-    line.result === null ? '#888'
-    : line.result === target ? '#4caf50'
-    : Math.abs(line.result - target) <= 10 ? '#ff9800'
-    : '#90caf9';
+    line.result === null ? theme.resultNull
+    : line.result === target ? theme.resultExact
+    : Math.abs(line.result - target) <= 10 ? theme.resultClose
+    : theme.resultFar;
 
   const canTapResultTile = resultTile !== null && !resultTileUsed;
 
@@ -84,19 +86,23 @@ export default function ScratchLine({
       <View style={styles.rowContainer}>
         {/* Delete button revealed behind swipe (mobile) */}
         {!isWeb && (
-          <TouchableOpacity style={styles.deleteBack} onPress={onDelete} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={[styles.deleteBack, { backgroundColor: theme.deleteBg }]}
+            onPress={onDelete}
+            activeOpacity={0.8}
+          >
             <Text style={styles.deleteBackText}>🗑</Text>
           </TouchableOpacity>
         )}
         <Animated.View
           style={[
             styles.row,
-            isActive && styles.rowActive,
+            { backgroundColor: theme.rowBg, borderColor: isActive ? theme.rowActiveBorder : 'transparent' },
             !isWeb && { transform: [{ translateX }] },
           ]}
           {...(!isWeb ? panResponder.panHandlers : {})}
         >
-          <Text style={styles.lineNum}>{lineNumber}</Text>
+          <Text style={[styles.lineNum, { color: theme.lineNumColor }]}>{lineNumber}</Text>
           <TouchableOpacity
             style={styles.exprArea}
             onPress={onActivate}
@@ -119,6 +125,7 @@ export default function ScratchLine({
               <TouchableOpacity
                 style={[
                   styles.resultTile,
+                  { backgroundColor: theme.resultTileBg, borderColor: theme.resultTileBorder },
                   resultTileUsed && styles.resultTileUsed,
                 ]}
                 onPress={onResultTileTap}
@@ -133,7 +140,11 @@ export default function ScratchLine({
 
             {/* Trash icon — always visible on web, hidden on mobile (swipe instead) */}
             {isWeb && (
-              <TouchableOpacity style={styles.trashBtn} onPress={onDelete} activeOpacity={0.7}>
+              <TouchableOpacity
+                style={[styles.trashBtn, { backgroundColor: theme.trashBtnBg }]}
+                onPress={onDelete}
+                activeOpacity={0.7}
+              >
                 <Text style={styles.trashText}>🗑</Text>
               </TouchableOpacity>
             )}
@@ -144,22 +155,30 @@ export default function ScratchLine({
       {isActive && isPlaying && (
         <View style={styles.inlineBar}>
           <TouchableOpacity
-            style={[styles.inlineBtn, cursorAtStart && styles.inlineBtnDimmed]}
+            style={[styles.inlineBtn, { backgroundColor: theme.inlineBtnBg }, cursorAtStart && styles.inlineBtnDimmed]}
             onPress={onCursorLeft} disabled={cursorAtStart} activeOpacity={0.8}
           >
-            <Text style={styles.inlineBtnText}>◀</Text>
+            <Text style={[styles.inlineBtnText, { color: theme.inlineBtnText }]}>◀</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.inlineBtn, cursorAtEnd && styles.inlineBtnDimmed]}
+            style={[styles.inlineBtn, { backgroundColor: theme.inlineBtnBg }, cursorAtEnd && styles.inlineBtnDimmed]}
             onPress={onCursorRight} disabled={cursorAtEnd} activeOpacity={0.8}
           >
-            <Text style={styles.inlineBtnText}>▶</Text>
+            <Text style={[styles.inlineBtnText, { color: theme.inlineBtnText }]}>▶</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.inlineBtn} onPress={onBackspace} activeOpacity={0.8}>
-            <Text style={styles.inlineBtnText}>⌫</Text>
+          <TouchableOpacity
+            style={[styles.inlineBtn, { backgroundColor: theme.inlineBtnBg }]}
+            onPress={onBackspace}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.inlineBtnText, { color: theme.inlineBtnText }]}>⌫</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.inlineBtn} onPress={onClear} activeOpacity={0.8}>
-            <Text style={styles.inlineBtnText}>✕</Text>
+          <TouchableOpacity
+            style={[styles.inlineBtn, { backgroundColor: theme.inlineBtnBg }]}
+            onPress={onClear}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.inlineBtnText, { color: theme.inlineBtnText }]}>✕</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -181,7 +200,6 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 56,
-    backgroundColor: '#b71c1c',
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
     justifyContent: 'center',
@@ -193,21 +211,15 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1a1a2e',
     borderRadius: 10,
     padding: 8,
     borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  rowActive: {
-    borderColor: '#1565c0',
   },
   exprArea: {
     flex: 1,
   },
   lineNum: {
     fontSize: 11,
-    color: '#546e7a',
     width: 16,
     textAlign: 'right',
     marginRight: 6,
@@ -223,9 +235,7 @@ const styles = StyleSheet.create({
     height: 32,
     minWidth: 44,
     borderRadius: 8,
-    backgroundColor: '#263238',
     borderWidth: 1,
-    borderColor: '#546e7a',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 6,
@@ -244,7 +254,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 6,
-    backgroundColor: '#37474f',
   },
   trashText: {
     fontSize: 16,
@@ -257,7 +266,6 @@ const styles = StyleSheet.create({
   },
   inlineBtn: {
     flex: 1,
-    backgroundColor: '#263238',
     borderRadius: 8,
     paddingVertical: 8,
     alignItems: 'center',
@@ -266,7 +274,6 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   inlineBtnText: {
-    color: '#eceff1',
     fontSize: 15,
     fontWeight: '600',
   },

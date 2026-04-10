@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { NumberTileData } from '../types/game';
 import React from 'react';
+import { useTheme } from '../theme/ThemeContext';
 
 interface Props {
   tile: NumberTileData;
@@ -10,14 +11,20 @@ interface Props {
 }
 
 export default function NumberTile({ tile, onPress, disabled }: Props) {
+  const { theme } = useTheme();
+
   return (
     <TouchableOpacity
-      style={[styles.tile, disabled && styles.disabled]}
+      style={[
+        styles.tile,
+        { backgroundColor: disabled ? theme.numberTileDisabledBg : theme.numberTileBg },
+        disabled && styles.disabled,
+      ]}
       onPress={() => onPress(tile.id)}
       disabled={disabled}
       activeOpacity={0.7}
     >
-      <Text style={[styles.value, disabled && styles.disabledText]}>
+      <Text style={[styles.value, { color: disabled ? theme.numberTileDisabledText : theme.targetNumber }]}>
         {tile.value}
       </Text>
     </TouchableOpacity>
@@ -29,24 +36,17 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 10,
-    backgroundColor: '#c47500',
     justifyContent: 'center',
     alignItems: 'center',
     margin: 4,
     elevation: 4,
   },
   disabled: {
-    backgroundColor: '#3a3a3a',
     opacity: 0.4,
     elevation: 0,
   },
   value: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  disabledText: {
-    color: '#888',
-    textShadowColor: 'transparent',
   },
 });

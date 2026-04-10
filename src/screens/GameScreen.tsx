@@ -2,12 +2,14 @@ import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { useScratchpadState } from '../hooks/useScratchpadState';
 import ScratchpadScreen from './ScratchpadScreen';
+import { ThemeProvider, useTheme } from '../theme/ThemeContext';
 
-export default function GameScreen() {
+function GameScreenInner() {
   const { state, dispatch } = useScratchpadState();
+  const { theme } = useTheme();
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]}>
       <ScratchpadScreen
         state={state}
         dispatch={dispatch}
@@ -17,9 +19,16 @@ export default function GameScreen() {
   );
 }
 
+export default function GameScreen() {
+  return (
+    <ThemeProvider>
+      <GameScreenInner />
+    </ThemeProvider>
+  );
+}
+
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#0d1117',
   },
 });

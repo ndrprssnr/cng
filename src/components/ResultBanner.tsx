@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ScoreResult, BestSolution } from '../types/game';
+import { useTheme } from '../theme/ThemeContext';
 
 interface Props {
   score: ScoreResult;
@@ -10,10 +11,11 @@ interface Props {
 }
 
 export default function ResultBanner({ score, result, target, bestSolution }: Props) {
+  const { theme } = useTheme();
   const isExact = score.label === 'exact';
   const isClose = score.label === 'close';
 
-  const bannerStyle = isExact ? styles.exact : isClose ? styles.close : styles.off;
+  const bannerBg = isExact ? theme.bannerExactBg : isClose ? theme.bannerCloseBg : theme.bannerOffBg;
 
   const message = isExact
     ? `Exact! You got ${target}!`
@@ -23,22 +25,22 @@ export default function ResultBanner({ score, result, target, bestSolution }: Pr
 
   return (
     <View style={styles.container}>
-      <View style={[styles.banner, bannerStyle]}>
-        <Text style={styles.text}>{message}</Text>
+      <View style={[styles.banner, { backgroundColor: bannerBg }]}>
+        <Text style={[styles.text, { color: theme.bannerText }]}>{message}</Text>
       </View>
 
       {bestSolution && (
-        <View style={styles.solutionBox}>
+        <View style={[styles.solutionBox, { backgroundColor: theme.solutionBoxBg }]}>
           {bestSolution.result === target ? (
             <>
-              <Text style={styles.solutionLabel}>{isExact ? 'Simpler solution:' : 'Best solution:'}</Text>
-              <Text style={styles.solutionExpr}>{bestSolution.expression} = {bestSolution.result}</Text>
+              <Text style={[styles.solutionLabel, { color: theme.solutionLabel }]}>{isExact ? 'Simpler solution:' : 'Best solution:'}</Text>
+              <Text style={[styles.solutionExpr, { color: theme.solutionExpr }]}>{bestSolution.expression} = {bestSolution.result}</Text>
             </>
           ) : (
             <>
-              <Text style={styles.solutionLabel}>Closest possible:</Text>
-              <Text style={styles.solutionExpr}>{bestSolution.expression} = {bestSolution.result}</Text>
-              <Text style={styles.solutionSub}>(off by {Math.abs(bestSolution.result - target)})</Text>
+              <Text style={[styles.solutionLabel, { color: theme.solutionLabel }]}>Closest possible:</Text>
+              <Text style={[styles.solutionExpr, { color: theme.solutionExpr }]}>{bestSolution.expression} = {bestSolution.result}</Text>
+              <Text style={[styles.solutionSub, { color: theme.solutionLabel }]}>(off by {Math.abs(bestSolution.result - target)})</Text>
             </>
           )}
         </View>
@@ -57,29 +59,17 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
   },
-  exact: {
-    backgroundColor: '#1b5e20',
-  },
-  close: {
-    backgroundColor: '#e65100',
-  },
-  off: {
-    backgroundColor: '#37474f',
-  },
   text: {
-    color: '#ffffff',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   solutionBox: {
-    backgroundColor: '#1a237e',
     borderRadius: 12,
     padding: 14,
     alignItems: 'center',
   },
   solutionLabel: {
-    color: '#90caf9',
     fontSize: 13,
     fontWeight: '600',
     letterSpacing: 1,
@@ -87,14 +77,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   solutionExpr: {
-    color: '#ffffff',
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'monospace',
     textAlign: 'center',
   },
   solutionSub: {
-    color: '#90caf9',
     fontSize: 13,
     marginTop: 4,
   },

@@ -1,5 +1,7 @@
-import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useRef } from 'react';
+
+import { useTheme } from '../theme/ThemeContext';
 
 interface Props {
   target: number;
@@ -7,6 +9,7 @@ interface Props {
 }
 
 export default function TargetDisplay({ target, exactSolvable }: Props) {
+  const { theme, themeName, toggleTheme } = useTheme();
   const pulse = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -30,16 +33,19 @@ export default function TargetDisplay({ target, exactSolvable }: Props) {
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.targetBg }]}>
+      <TouchableOpacity style={styles.toggleBtn} onPress={toggleTheme} activeOpacity={0.7}>
+        <Text style={styles.toggleIcon}>{themeName === 'dark' ? '☀' : '🌙'}</Text>
+      </TouchableOpacity>
       <View style={styles.labelRow}>
-        <Text style={styles.label}>TARGET</Text>
+        <Text style={[styles.label, { color: theme.targetLabel }]}>TARGET</Text>
         {exactSolvable === null ? (
-          <Animated.View style={[styles.dot, styles.dotSolving, { opacity }]} />
+          <Animated.View style={[styles.dot, { backgroundColor: theme.dotSolving, opacity }]} />
         ) : (
-          <View style={[styles.dot, exactSolvable ? styles.dotSolvable : styles.dotUnsolvable]} />
+          <View style={[styles.dot, { backgroundColor: exactSolvable ? theme.dotSolvable : theme.dotUnsolvable }]} />
         )}
       </View>
-      <Text style={styles.target}>{target}</Text>
+      <Text style={[styles.target, { color: theme.targetNumber }]}>{target}</Text>
     </View>
   );
 }
@@ -47,12 +53,21 @@ export default function TargetDisplay({ target, exactSolvable }: Props) {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#c0392b',
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 40,
     marginBottom: 16,
     elevation: 6,
+    position: 'relative',
+  },
+  toggleBtn: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    padding: 4,
+  },
+  toggleIcon: {
+    fontSize: 18,
   },
   labelRow: {
     flexDirection: 'row',
@@ -62,28 +77,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#ffcdd2',
     letterSpacing: 3,
     textTransform: 'uppercase',
   },
   target: {
     fontSize: 64,
     fontWeight: 'bold',
-    color: '#ffffff',
     lineHeight: 72,
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-  },
-  dotSolving: {
-    backgroundColor: '#ffffff',
-  },
-  dotSolvable: {
-    backgroundColor: '#69f0ae',
-  },
-  dotUnsolvable: {
-    backgroundColor: 'rgba(255,100,100,0.35)',
   },
 });
