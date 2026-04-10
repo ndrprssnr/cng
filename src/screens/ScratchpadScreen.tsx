@@ -23,7 +23,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
     <View style={styles.safe}>
       {/* Fixed header — does not scroll */}
       <View style={styles.header}>
-        <TargetDisplay target={state.target} exactSolvable={state.exactSolvable} compact />
+        <TargetDisplay target={state.target} exactSolvable={state.exactSolvable} />
 
         {/* Number tiles — single row */}
         <View style={styles.tilesRow}>
