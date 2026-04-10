@@ -17,9 +17,10 @@ function pickRandom<T>(arr: T[]): T {
 }
 
 export function generateNumbers(): number[] {
-  // Weighted pick: 2 large = 60%, 1 large = 35%, 3 large = 5%
+  // Weighted pick for large number count: 0=5%, 1=40%, 2=50%, 3=3%, 4=2%
   const r = Math.random();
-  const largeCount = r < 0.60 ? 2 : r < 0.95 ? 1 : 3;
+  const largeCount = r < 0.05 ? 0 : r < 0.45 ? 1 : r < 0.95 ? 2 : r < 0.98 ? 3 : 4;
+  // Each large number can only appear once — pick without replacement
   const largePick = shuffle(LARGE_NUMBERS).slice(0, largeCount);
   const smallCount = 6 - largeCount;
   const smallPick = Array.from({ length: smallCount }, () => pickRandom(SMALL_RANGE));
