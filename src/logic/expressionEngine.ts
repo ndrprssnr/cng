@@ -256,6 +256,10 @@ export function evaluateExpression(tokens: ExpressionToken[]): number | null {
 export function getLiveResult(tokens: ExpressionToken[]): number | null {
   if (tokens.length === 0) return null;
   if (tokens.some(t => t.stale)) return null;
+
+  // Single number token is a valid complete expression
+  if (tokens.length === 1 && tokens[0].type === 'number') return tokens[0].value ?? null;
+
   if (!tokens.some(t => t.type === 'operator' && t.operator !== '(' && t.operator !== ')')) return null;
   if (!isBalanced(tokens)) return null;
 
