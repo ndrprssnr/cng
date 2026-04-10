@@ -22,6 +22,7 @@ export interface ScratchpadSnapshot {
   tiles: NumberTileData[];
   activeLineId: string;
   resultTiles: ResultTile[];
+  bestResult: number | null;
 }
 
 export interface ScratchpadState {

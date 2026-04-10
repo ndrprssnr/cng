@@ -1,14 +1,19 @@
-import React from 'react';
+import { ScratchpadAction, ScratchpadState } from '../types/scratchpad';
 import {
-  View, ScrollView, TouchableOpacity, Text, StyleSheet,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { Operator } from '../types/game';
-import { ScratchpadState, ScratchpadAction } from '../types/scratchpad';
-import TargetDisplay from '../components/TargetDisplay';
+
 import NumberTile from '../components/NumberTile';
+import { Operator } from '../types/game';
 import OperatorButton from '../components/OperatorButton';
+import React from 'react';
 import ResultBanner from '../components/ResultBanner';
 import ScratchLine from '../components/ScratchLine';
+import TargetDisplay from '../components/TargetDisplay';
 
 interface Props {
   state: ScratchpadState;
@@ -122,7 +127,9 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                   disabled={!state.snapshot}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.snapshotBtnText}>Restore</Text>
+                  <Text style={styles.snapshotBtnText}>
+                    Restore {state.snapshot ? (state.snapshot.bestResult !== null ? `(${state.snapshot.bestResult})` : '(/)') : ''}
+                  </Text>
                 </TouchableOpacity>
               </View>
             )}

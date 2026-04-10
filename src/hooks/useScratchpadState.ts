@@ -392,11 +392,21 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
     }
 
     case 'SP_SAVE_SNAPSHOT': {
+      const candidateLines = state.lines.filter(l => l.result !== null);
+      let bestResult: number | null = null;
+      if (candidateLines.length > 0) {
+        bestResult = candidateLines.reduce((best, l) =>
+          Math.abs((l.result as number) - state.target) < Math.abs(best - state.target)
+            ? (l.result as number) : best,
+          candidateLines[0].result as number
+        );
+      }
       const snapshot: ScratchpadSnapshot = {
         lines: state.lines,
         tiles: state.tiles,
         activeLineId: state.activeLineId,
         resultTiles: state.resultTiles,
+        bestResult,
       };
       return { ...state, snapshot };
     }
