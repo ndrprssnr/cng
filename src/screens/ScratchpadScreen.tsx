@@ -106,6 +106,26 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                 <Text style={styles.resetBtnText}>Reset</Text>
               </TouchableOpacity>
             )}
+
+            {isPlaying && (
+              <View style={styles.snapshotRow}>
+                <TouchableOpacity
+                  style={styles.snapshotBtn}
+                  onPress={() => dispatch({ type: 'SP_SAVE_SNAPSHOT' })}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.snapshotBtnText}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.snapshotBtn, !state.snapshot && styles.snapshotBtnDisabled]}
+                  onPress={() => dispatch({ type: 'SP_RESTORE_SNAPSHOT' })}
+                  disabled={!state.snapshot}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.snapshotBtnText}>Restore</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
 
 
@@ -202,6 +222,28 @@ const styles = StyleSheet.create({
   },
   resetBtnText: {
     color: '#e57373',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  snapshotRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 6,
+  },
+  snapshotBtn: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#1565c0',
+    alignItems: 'center',
+  },
+  snapshotBtnDisabled: {
+    borderColor: '#37474f',
+    opacity: 0.4,
+  },
+  snapshotBtnText: {
+    color: '#90caf9',
     fontSize: 13,
     fontWeight: '600',
   },

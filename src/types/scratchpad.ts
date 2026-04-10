@@ -16,6 +16,14 @@ export interface ScratchLine {
   result: number | null;
 }
 
+/** A snapshot of the user's working state, saved mid-game for later restoration. */
+export interface ScratchpadSnapshot {
+  lines: ScratchLine[];
+  tiles: NumberTileData[];
+  activeLineId: string;
+  resultTiles: ResultTile[];
+}
+
 export interface ScratchpadState {
   phase: 'playing' | 'submitted';
   gameId: number;                      // increments on each new game, used to re-run solver
@@ -28,6 +36,7 @@ export interface ScratchpadState {
   resultTiles: ResultTile[];          // one entry per line that has a non-null result
   score: ScoreResult | null;
   bestSolution: BestSolution | null;
+  snapshot: ScratchpadSnapshot | null;
 }
 
 export type ScratchpadAction =
@@ -44,4 +53,6 @@ export type ScratchpadAction =
   | { type: 'SP_DELETE_LINE'; lineId: string }
   | { type: 'SP_SUBMIT' }
   | { type: 'SP_NEW_GAME' }
-  | { type: 'SP_SOLUTION_READY'; solution: BestSolution | null; exactSolvable: boolean };
+  | { type: 'SP_SOLUTION_READY'; solution: BestSolution | null; exactSolvable: boolean }
+  | { type: 'SP_SAVE_SNAPSHOT' }
+  | { type: 'SP_RESTORE_SNAPSHOT' };

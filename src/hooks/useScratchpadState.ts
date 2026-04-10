@@ -1,5 +1,5 @@
 import { BestSolution, ExpressionToken, NumberTileData } from '../types/game';
-import { ResultTile, ScratchLine, ScratchpadAction, ScratchpadState } from '../types/scratchpad';
+import { ResultTile, ScratchLine, ScratchpadAction, ScratchpadSnapshot, ScratchpadState } from '../types/scratchpad';
 import { buildTiles, generateTarget } from '../logic/gameSetup';
 import { useEffect, useReducer } from 'react';
 
@@ -168,6 +168,7 @@ function createInitialState(gameId: number): ScratchpadState {
     resultTiles: [],
     score: null,
     bestSolution: null,
+    snapshot: null,
   };
 }
 
@@ -374,7 +375,7 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
           bestSolution = pre;
         }
       }
-      return { ...state, phase: 'submitted', score, bestSolution };
+      return { ...state, phase: 'submitted', score, bestSolution, snapshot: null };
     }
 
     case 'SP_NEW_GAME': {
@@ -388,6 +389,22 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
         exactSolvable: action.exactSolvable,
         precomputedSolution: action.solution,
       };
+    }
+
+    case 'SP_SAVE_SNAPSHOT': {
+      const snapshot: ScratchpadSnapshot = {
+        lines: state.lines,
+        tiles: state.tiles,
+        activeLineId: state.activeLineId,
+        resultTiles: state.resultTiles,
+      };
+      return { ...state, snapshot };
+    }
+
+    case 'SP_RESTORE_SNAPSHOT': {
+      if (!state.snapshot) return state;
+      const s = state.snapshot;
+      return { ...state, lines: s.lines, tiles: s.tiles, activeLineId: s.activeLineId, resultTiles: s.resultTiles };
     }
 
     default:
