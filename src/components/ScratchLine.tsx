@@ -81,64 +81,65 @@ export default function ScratchLine({
 
   return (
     <View style={styles.wrapper}>
-      {/* Delete button revealed behind swipe (mobile) */}
-      {!isWeb && (
-        <TouchableOpacity style={styles.deleteBack} onPress={onDelete} activeOpacity={0.8}>
-          <Text style={styles.deleteBackText}>🗑</Text>
-        </TouchableOpacity>
-      )}
-
-      <Animated.View
-        style={[
-          styles.row,
-          isActive && styles.rowActive,
-          !isWeb && { transform: [{ translateX }] },
-        ]}
-        {...(!isWeb ? panResponder.panHandlers : {})}
-      >
-        <Text style={styles.lineNum}>{lineNumber}</Text>
-        <TouchableOpacity
-          style={styles.exprArea}
-          onPress={onActivate}
-          activeOpacity={1}
+      <View style={styles.rowContainer}>
+        {/* Delete button revealed behind swipe (mobile) */}
+        {!isWeb && (
+          <TouchableOpacity style={styles.deleteBack} onPress={onDelete} activeOpacity={0.8}>
+            <Text style={styles.deleteBackText}>🗑</Text>
+          </TouchableOpacity>
+        )}
+        <Animated.View
+          style={[
+            styles.row,
+            isActive && styles.rowActive,
+            !isWeb && { transform: [{ translateX }] },
+          ]}
+          {...(!isWeb ? panResponder.panHandlers : {})}
         >
-          <ExpressionDisplay
-            tokens={line.expression}
-            cursorPos={line.cursorPos}
-            result={line.result}
-            target={target}
-            onTokenPress={pos => { onActivate(); onTokenPress(pos); }}
-            cursorActive={isActive}
-            lineNumberMap={lineNumberMap}
-          />
-        </TouchableOpacity>
+          <Text style={styles.lineNum}>{lineNumber}</Text>
+          <TouchableOpacity
+            style={styles.exprArea}
+            onPress={onActivate}
+            activeOpacity={1}
+          >
+            <ExpressionDisplay
+              tokens={line.expression}
+              cursorPos={line.cursorPos}
+              result={line.result}
+              target={target}
+              onTokenPress={pos => { onActivate(); onTokenPress(pos); }}
+              cursorActive={isActive}
+              lineNumberMap={lineNumberMap}
+            />
+          </TouchableOpacity>
 
-        <View style={styles.rightCol}>
-          {/* Result tile button */}
-          {resultTile !== null && (
-            <TouchableOpacity
-              style={[
-                styles.resultTile,
-                resultTileUsed && styles.resultTileUsed,
-              ]}
-              onPress={onResultTileTap}
-              disabled={!canTapResultTile}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.resultTileText, { color: resultColor }]}>
-                {resultTile.value}
-              </Text>
-            </TouchableOpacity>
-          )}
+          <View style={styles.rightCol}>
+            {/* Result tile button */}
+            {resultTile !== null && (
+              <TouchableOpacity
+                style={[
+                  styles.resultTile,
+                  resultTileUsed && styles.resultTileUsed,
+                ]}
+                onPress={onResultTileTap}
+                disabled={!canTapResultTile}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.resultTileText, { color: resultColor }]}>
+                  {resultTile.value}
+                </Text>
+              </TouchableOpacity>
+            )}
 
-          {/* Trash icon — always visible on web, hidden on mobile (swipe instead) */}
-          {isWeb && (
-            <TouchableOpacity style={styles.trashBtn} onPress={onDelete} activeOpacity={0.7}>
-              <Text style={styles.trashText}>🗑</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </Animated.View>
+            {/* Trash icon — always visible on web, hidden on mobile (swipe instead) */}
+            {isWeb && (
+              <TouchableOpacity style={styles.trashBtn} onPress={onDelete} activeOpacity={0.7}>
+                <Text style={styles.trashText}>🗑</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </Animated.View>
+      </View>
 
       {isActive && isPlaying && (
         <View style={styles.inlineBar}>
@@ -171,11 +172,14 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 6,
   },
+  rowContainer: {
+    position: 'relative',
+  },
   deleteBack: {
     position: 'absolute',
     right: 0,
     top: 0,
-    height: 46,
+    bottom: 0,
     width: 56,
     backgroundColor: '#b71c1c',
     borderTopRightRadius: 10,
