@@ -109,8 +109,6 @@ export default function ScratchLine({
             target={target}
             onTokenPress={pos => { onActivate(); onTokenPress(pos); }}
             cursorActive={isActive}
-            showResult={false}
-            compact
             lineNumberMap={lineNumberMap}
           />
         </TouchableOpacity>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { ExpressionToken } from '../types/game';
 
@@ -9,17 +9,11 @@ interface Props {
   result: number | null;
   target: number;
   onTokenPress: (index: number) => void;
-  /** When false, cursor is hidden and the blink timer is not started. Default: true */
   cursorActive?: boolean;
-  /** When false, the "= result" row is not rendered. Default: true */
-  showResult?: boolean;
-  /** When true, the container uses compact single-line sizing. Default: false */
-  compact?: boolean;
-  /** Maps lineId → 1-based line number; used to render subscript on result-tile tokens */
   lineNumberMap?: Map<string, number>;
 }
 
-export default function ExpressionDisplay({ tokens, cursorPos, result, target, onTokenPress, cursorActive = true, showResult = true, compact = false, lineNumberMap }: Props) {
+export default function ExpressionDisplay({ tokens, cursorPos, result, target, onTokenPress, cursorActive = true, lineNumberMap }: Props) {
   const [cursorVisible, setCursorVisible] = useState(true);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -54,7 +48,6 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
   } else {
     const parts: React.ReactNode[] = [];
 
-    // Tappable gap before the first token (cursor position 0)
     parts.push(
       <TouchableOpacity key="gap-0" onPress={() => onTokenPress(0)} style={styles.gap}>
         <Text style={[styles.tick, cursorPos === 0 && (cursorVisible ? styles.tickActive : styles.tickHidden)]}>|</Text>
@@ -76,7 +69,6 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
           )}
         </View>
       );
-      // Tappable gap after each token (cursor position index + 1)
       const isActive = cursorPos === index + 1;
       parts.push(
         <TouchableOpacity key={`gap-${index + 1}`} onPress={() => onTokenPress(index + 1)} style={styles.gap}>
@@ -89,34 +81,17 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
   }
 
   return (
-    <View style={[styles.container, compact && styles.containerCompact]}>
+    <View style={styles.container}>
       <View style={styles.exprRow}>
         {exprContent}
       </View>
-      {showResult && (
-        <View style={styles.resultRow}>
-          <Text style={[styles.result, { color: resultColor }]}>
-            {result !== null ? `= ${result}` : ' '}
-          </Text>
-        </View>
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1a1a2e',
-    borderRadius: 12,
-    padding: 14,
-    minHeight: 116,
-    marginBottom: 16,
-    justifyContent: 'space-between',
-  },
-  containerCompact: {
     padding: 6,
-    minHeight: 0,
-    marginBottom: 0,
     borderRadius: 6,
   },
   exprRow: {
@@ -167,12 +142,5 @@ const styles = StyleSheet.create({
     color: '#555',
     fontStyle: 'italic',
     fontSize: 15,
-  },
-  result: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  resultRow: {
-    justifyContent: 'flex-end',
   },
 });
