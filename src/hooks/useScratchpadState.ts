@@ -158,7 +158,6 @@ function createInitialState(gameId: number): ScratchpadState {
   const firstLine = emptyLine();
   return {
     phase: 'playing',
-    solving: true,
     gameId,
     tiles,
     target,
@@ -386,7 +385,6 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
     case 'SP_SOLUTION_READY': {
       return {
         ...state,
-        solving: false,
         exactSolvable: action.exactSolvable,
         precomputedSolution: action.solution,
       };
@@ -444,7 +442,6 @@ export function useScratchpadState() {
           numCount: solution.numCount,
         } : null,
         exactSolvable: solution !== null && solution.result === target,
-        gameId: state.gameId,
       });
     }, 0);
     return () => clearTimeout(timer);

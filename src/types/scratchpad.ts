@@ -18,7 +18,6 @@ export interface ScratchLine {
 
 export interface ScratchpadState {
   phase: 'playing' | 'submitted';
-  solving: boolean;
   gameId: number;                      // increments on each new game, used to re-run solver
   tiles: NumberTileData[];
   target: number;
@@ -45,4 +44,4 @@ export type ScratchpadAction =
   | { type: 'SP_DELETE_LINE'; lineId: string }
   | { type: 'SP_SUBMIT' }
   | { type: 'SP_NEW_GAME' }
-  | { type: 'SP_SOLUTION_READY'; solution: BestSolution | null; exactSolvable: boolean; gameId: number };
+  | { type: 'SP_SOLUTION_READY'; solution: BestSolution | null; exactSolvable: boolean };
