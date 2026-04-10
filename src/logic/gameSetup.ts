@@ -12,10 +12,6 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function pickRandom<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
 export function generateNumbers(): number[] {
   // Weighted pick for large number count: 0=5%, 1=40%, 2=50%, 3=3%, 4=2%
   const r = Math.random();
@@ -23,7 +19,8 @@ export function generateNumbers(): number[] {
   // Each large number can only appear once — pick without replacement
   const largePick = shuffle(LARGE_NUMBERS).slice(0, largeCount);
   const smallCount = 6 - largeCount;
-  const smallPick = Array.from({ length: smallCount }, () => pickRandom(SMALL_RANGE));
+  const smallPool = shuffle([...SMALL_RANGE, ...SMALL_RANGE]);
+  const smallPick = smallPool.slice(0, smallCount);
   return shuffle([...largePick, ...smallPick]);
 }
 
