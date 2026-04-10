@@ -103,34 +103,33 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
             )}
 
             {isPlaying && (
-              <TouchableOpacity
-                style={styles.resetBtn}
-                onPress={() => dispatch({ type: 'SP_RESET' })}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.resetBtnText}>Reset</Text>
-              </TouchableOpacity>
-            )}
-
-            {isPlaying && (
-              <View style={styles.snapshotRow}>
+              <View style={styles.controlsRow}>
                 <TouchableOpacity
-                  style={styles.snapshotBtn}
-                  onPress={() => dispatch({ type: 'SP_SAVE_SNAPSHOT' })}
+                  style={styles.resetBtn}
+                  onPress={() => dispatch({ type: 'SP_RESET' })}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.snapshotBtnText}>Save</Text>
+                  <Text style={styles.resetBtnText}>Reset</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.snapshotBtn, !state.snapshot && styles.snapshotBtnDisabled]}
-                  onPress={() => dispatch({ type: 'SP_RESTORE_SNAPSHOT' })}
-                  disabled={!state.snapshot}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.snapshotBtnText}>
-                    Restore {state.snapshot ? (state.snapshot.bestResult !== null ? `(${state.snapshot.bestResult})` : '(/)') : ''}
-                  </Text>
-                </TouchableOpacity>
+                <View style={styles.snapshotCol}>
+                  <TouchableOpacity
+                    style={styles.snapshotBtn}
+                    onPress={() => dispatch({ type: 'SP_SAVE_SNAPSHOT' })}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.snapshotBtnText}>Save</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.snapshotBtn, !state.snapshot && styles.snapshotBtnDisabled]}
+                    onPress={() => dispatch({ type: 'SP_RESTORE_SNAPSHOT' })}
+                    disabled={!state.snapshot}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.snapshotBtnText}>
+                      Restore {state.snapshot ? (state.snapshot.bestResult !== null ? `(${state.snapshot.bestResult})` : '(/)') : ''}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             )}
           </View>
@@ -219,23 +218,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  resetBtn: {
+  controlsRow: {
+    flexDirection: 'row',
+    gap: 8,
     marginTop: 6,
+  },
+  resetBtn: {
+    flex: 1,
     paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#b71c1c',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   resetBtnText: {
     color: '#e57373',
     fontSize: 13,
     fontWeight: '600',
   },
-  snapshotRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 6,
+  snapshotCol: {
+    flex: 1,
+    gap: 6,
   },
   snapshotBtn: {
     flex: 1,
