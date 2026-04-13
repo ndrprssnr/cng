@@ -52,7 +52,7 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
 
     parts.push(
       <TouchableOpacity key="gap-0" onPress={() => onTokenPress(0)} style={styles.gap}>
-        <Text style={[styles.tick, { color: cursorPos === 0 ? (cursorVisible ? theme.cursorActive : 'transparent') : theme.cursorDefault }]}>|</Text>
+        <Text style={[styles.tick, { color: cursorPos === 0 ? (cursorVisible ? theme.cursorActive : theme.cursorDefault) : theme.cursorDefault }]}>|</Text>
       </TouchableOpacity>
     );
 
@@ -74,7 +74,7 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
       const isActive = cursorPos === index + 1;
       parts.push(
         <TouchableOpacity key={`gap-${index + 1}`} onPress={() => onTokenPress(index + 1)} style={styles.gap}>
-          <Text style={[styles.tick, { color: isActive ? (cursorVisible ? theme.cursorActive : 'transparent') : theme.cursorDefault }]}>|</Text>
+          <Text style={[styles.tick, { color: isActive ? (cursorVisible ? theme.cursorActive : theme.cursorDefault) : theme.cursorDefault }]}>|</Text>
         </TouchableOpacity>
       );
     });
