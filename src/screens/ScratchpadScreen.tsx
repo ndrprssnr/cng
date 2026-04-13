@@ -103,41 +103,6 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                 <Text style={[styles.addLineText, { color: theme.addLineText }]}>+ Add line</Text>
               </TouchableOpacity>
             )}
-
-            {isPlaying && (
-              <View style={styles.controlsRow}>
-                <TouchableOpacity
-                  style={[styles.resetBtn, { borderColor: theme.resetBorder }]}
-                  onPress={() => dispatch({ type: 'SP_RESET' })}
-                  activeOpacity={0.8}
-                >
-                  <Text style={[styles.resetBtnText, { color: theme.resetText }]}>Reset</Text>
-                </TouchableOpacity>
-                <View style={styles.snapshotCol}>
-                  <TouchableOpacity
-                    style={[styles.snapshotBtn, { borderColor: theme.snapshotBorder }]}
-                    onPress={() => dispatch({ type: 'SP_SAVE_SNAPSHOT' })}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={[styles.snapshotBtnText, { color: theme.snapshotText }]}>Save</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      styles.snapshotBtn,
-                      { borderColor: state.snapshot ? theme.snapshotBorder : theme.snapshotBorderDisabled },
-                      !state.snapshot && styles.snapshotBtnDisabled,
-                    ]}
-                    onPress={() => dispatch({ type: 'SP_RESTORE_SNAPSHOT' })}
-                    disabled={!state.snapshot}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={[styles.snapshotBtnText, { color: theme.snapshotText }]}>
-                      Restore {state.snapshot ? (state.snapshot.bestResult !== null ? `(${state.snapshot.bestResult})` : '(/)') : ''}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
           </View>
 
 
@@ -167,6 +132,40 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
       </ScrollView>
 
       <View style={[styles.footer, { backgroundColor: theme.headerFooterBg }]}>
+        {isPlaying && (
+          <View style={styles.controlsRow}>
+            <TouchableOpacity
+              style={[styles.resetBtn, { borderColor: theme.resetBorder }]}
+              onPress={() => dispatch({ type: 'SP_RESET' })}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.resetBtnText, { color: theme.resetText }]}>Reset</Text>
+            </TouchableOpacity>
+            <View style={styles.snapshotCol}>
+              <TouchableOpacity
+                style={[styles.snapshotBtn, { borderColor: theme.snapshotBorder }]}
+                onPress={() => dispatch({ type: 'SP_SAVE_SNAPSHOT' })}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.snapshotBtnText, { color: theme.snapshotText }]}>Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.snapshotBtn,
+                  { borderColor: state.snapshot ? theme.snapshotBorder : theme.snapshotBorderDisabled },
+                  !state.snapshot && styles.snapshotBtnDisabled,
+                ]}
+                onPress={() => dispatch({ type: 'SP_RESTORE_SNAPSHOT' })}
+                disabled={!state.snapshot}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.snapshotBtnText, { color: theme.snapshotText }]}>
+                  Restore {state.snapshot ? (state.snapshot.bestResult !== null ? `(${state.snapshot.bestResult})` : '(/)') : ''}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
         {isPlaying ? (
           <TouchableOpacity
             style={[
@@ -212,7 +211,6 @@ const styles = StyleSheet.create({
     paddingTop: 6,
   },
   linesArea: {
-    marginBottom: 12,
   },
   addLine: {
     marginTop: 4,
@@ -229,7 +227,7 @@ const styles = StyleSheet.create({
   controlsRow: {
     flexDirection: 'row',
     gap: 8,
-    marginTop: 6,
+    marginBottom: 8,
   },
   resetBtn: {
     flex: 1,
@@ -248,7 +246,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   snapshotBtn: {
-    flex: 1,
     paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
