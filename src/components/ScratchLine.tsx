@@ -11,6 +11,7 @@ interface Props {
   line: ScratchLineData;
   isActive: boolean;
   isPlaying: boolean;
+  isLast: boolean;
   target: number;
   resultTile: ResultTile | null;
   resultTileUsed: boolean;
@@ -31,6 +32,7 @@ export default function ScratchLine({
   line,
   isActive,
   isPlaying,
+  isLast,
   target,
   resultTile,
   resultTileUsed,
@@ -58,13 +60,13 @@ export default function ScratchLine({
 
   return (
     <View style={styles.wrapper}>
-      <View style={styles.rowContainer}>
-        <View
-          style={[
-            styles.row,
-            { backgroundColor: theme.rowBg, borderColor: isActive ? theme.rowActiveBorder : 'transparent' },
-          ]}
-        >
+      <View
+        style={[
+          styles.row,
+          { borderBottomColor: isActive ? theme.rowActiveBorder : theme.paperRule },
+          isLast && styles.rowLast,
+        ]}
+      >
           <Text style={[styles.lineNum, { color: theme.lineNumColor }]}>{lineNumber}</Text>
           <TouchableOpacity
             style={styles.exprArea}
@@ -103,7 +105,6 @@ export default function ScratchLine({
             )}
           </View>
         </View>
-      </View>
 
       {isActive && isPlaying && (
         <View style={styles.inlineBar}>
@@ -141,18 +142,17 @@ export default function ScratchLine({
 
 const styles = StyleSheet.create({
   wrapper: {
-    position: 'relative',
-    marginBottom: 6,
-  },
-  rowContainer: {
-    position: 'relative',
+    overflow: 'hidden',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 10,
-    padding: 8,
-    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+  },
+  rowLast: {
+    borderBottomWidth: 0,
   },
   exprArea: {
     flex: 1,

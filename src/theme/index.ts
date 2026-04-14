@@ -3,6 +3,9 @@ export interface Theme {
   headerFooterBg: string;
   rowBg: string;
   rowActiveBorder: string;
+  paperBg: string;
+  paperBorder: string;
+  paperRule: string;
   resultTileBg: string;
   resultTileBorder: string;
   inlineBtnBg: string;
@@ -58,6 +61,9 @@ export const darkTheme: Theme = {
   headerFooterBg: '#0d1117',
   rowBg: '#1a1a2e',
   rowActiveBorder: '#1565c0',
+  paperBg: '#1a1a2e',
+  paperBorder: '#37474f',
+  paperRule: '#2a2a4a',
   resultTileBg: '#263238',
   resultTileBorder: '#546e7a',
   inlineBtnBg: '#263238',
@@ -113,6 +119,9 @@ export const lightTheme: Theme = {
   headerFooterBg: '#f5f5f5',
   rowBg: '#ffffff',
   rowActiveBorder: '#1976d2',
+  paperBg: '#ffffff',
+  paperBorder: '#b0bec5',
+  paperRule: '#e0e0e0',
   resultTileBg: '#e0e0e0',
   resultTileBorder: '#90a4ae',
   inlineBtnBg: '#e0e0e0',

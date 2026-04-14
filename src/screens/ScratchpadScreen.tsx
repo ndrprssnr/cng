@@ -62,11 +62,11 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
 
-          {/* Scratch lines */}
-          <View style={styles.linesArea}>
+          {/* Scratch lines — paper container */}
+          <View style={[styles.linesArea, { backgroundColor: theme.paperBg, borderColor: theme.paperBorder }]}>
             {(() => {
               const lineNumberMap = new Map(state.lines.map((l, i) => [l.id, i + 1]));
-              return state.lines.map(line => {
+              return state.lines.map((line, idx) => {
                 const rt = state.resultTiles.find(r => r.sourceLineId === line.id) ?? null;
                 return (
                   <ScratchLine
@@ -74,6 +74,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                     line={line}
                     isActive={line.id === state.activeLineId}
                     isPlaying={isPlaying}
+                    isLast={idx === state.lines.length - 1}
                     target={state.target}
                     resultTile={rt}
                     resultTileUsed={rt?.used ?? false}
@@ -200,6 +201,9 @@ const styles = StyleSheet.create({
     paddingTop: 6,
   },
   linesArea: {
+    borderRadius: 10,
+    borderWidth: 1,
+    marginBottom: 12,
   },
   controlsRow: {
     flexDirection: 'row',
