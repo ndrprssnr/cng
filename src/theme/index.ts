@@ -15,11 +15,9 @@ export interface Theme {
   lineNumColor: string;
   addLineBorder: string;
   addLineText: string;
-  resetBg: string;
-  snapshotBg: string;
-  snapshotDisabledBg: string;
-  submitBg: string;
-  submitDisabledBg: string;
+  actionBtnBg: string;
+  actionBtnDisabledBg: string;
+  actionBtnText: string;
   primaryText: string;
   tokenText: string;
   tokenStale: string;
@@ -51,7 +49,6 @@ export interface Theme {
   solutionBoxBg: string;
   solutionLabel: string;
   solutionExpr: string;
-  newGameBg: string;
 }
 
 export const darkTheme: Theme = {
@@ -71,11 +68,9 @@ export const darkTheme: Theme = {
   lineNumColor: '#546e7a',
   addLineBorder: '#37474f',
   addLineText: '#607d8b',
-  resetBg: '#1e3a5f',
-  snapshotBg: '#1e3a5f',
-  snapshotDisabledBg: '#263238',
-  submitBg: '#1e3a5f',
-  submitDisabledBg: '#263238',
+  actionBtnBg: '#1e3a5f',
+  actionBtnDisabledBg: '#263238',
+  actionBtnText: '#ffffff',
   primaryText: '#ffffff',
   tokenText: '#e0e0e0',
   tokenStale: '#e53935',
@@ -107,7 +102,6 @@ export const darkTheme: Theme = {
   solutionBoxBg: '#1a237e',
   solutionLabel: '#90caf9',
   solutionExpr: '#ffffff',
-  newGameBg: '#2e7d32',
 };
 
 export const lightTheme: Theme = {
@@ -127,11 +121,9 @@ export const lightTheme: Theme = {
   lineNumColor: '#78909c',
   addLineBorder: '#b0bec5',
   addLineText: '#546e7a',
-  resetBg: '#125aac',
-  snapshotBg: '#125aac',
-  snapshotDisabledBg: '#bdbdbd',
-  submitBg: '#125aac',
-  submitDisabledBg: '#bdbdbd',
+  actionBtnBg: '#125aac',
+  actionBtnDisabledBg: '#bdbdbd',
+  actionBtnText: '#ffffff',
   primaryText: '#1a1a1a',
   tokenText: '#212121',
   tokenStale: '#c62828',
@@ -163,5 +155,4 @@ export const lightTheme: Theme = {
   solutionBoxBg: '#e8eaf6',
   solutionLabel: '#1565c0',
   solutionExpr: '#1a1a2e',
-  newGameBg: '#388e3c',
 };
