@@ -1,10 +1,13 @@
-import React from 'react';
+import { ResultTile, ScratchLine as ScratchLineData } from '../types/scratchpad';
 import {
-  View, Text, TouchableOpacity,
   StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { ScratchLine as ScratchLineData, ResultTile } from '../types/scratchpad';
+
 import ExpressionDisplay from './ExpressionDisplay';
+import React from 'react';
 import { useTheme } from '../theme/ThemeContext';
 
 interface Props {
@@ -192,6 +195,7 @@ const styles = StyleSheet.create({
     gap: 6,
     marginTop: 4,
     marginBottom: 2,
+    marginHorizontal: 4,
   },
   inlineBtn: {
     flex: 1,
