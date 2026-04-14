@@ -242,13 +242,12 @@ const styles = StyleSheet.create({
   },
   tilesRow: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    flexWrap: 'nowrap',
+    gap: 8,
+    marginBottom: 8,
   },
   operatorsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    flexWrap: 'wrap',
+    gap: 8,
   },
   footer: {
     paddingHorizontal: 20,

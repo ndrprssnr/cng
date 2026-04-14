@@ -33,12 +33,11 @@ export default function NumberTile({ tile, onPress, disabled }: Props) {
 
 const styles = StyleSheet.create({
   tile: {
-    width: 48,
+    flex: 1,
     height: 48,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 4,
     elevation: 4,
   },
   disabled: {

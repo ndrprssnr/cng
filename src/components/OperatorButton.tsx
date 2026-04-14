@@ -33,12 +33,11 @@ export default function OperatorButton({ operator, onPress, disabled }: Props) {
 
 const styles = StyleSheet.create({
   button: {
-    width: 48,
+    flex: 1,
     height: 48,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 4,
     elevation: 4,
   },
   disabled: {

@@ -52,6 +52,7 @@ export default function TargetDisplay({ target, exactSolvable }: Props) {
 
 const styles = StyleSheet.create({
   container: {
+    alignSelf: 'stretch',
     alignItems: 'center',
     borderRadius: 16,
     paddingVertical: 16,
