@@ -32,31 +32,6 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
       <View style={[styles.header, { backgroundColor: theme.headerFooterBg }]}>
         <TargetDisplay target={state.target} exactSolvable={state.exactSolvable} />
 
-        {/* Number tiles — single row */}
-        <View style={styles.tilesRow}>
-          {state.tiles.map(tile => (
-            <NumberTile
-              key={tile.id}
-              tile={tile}
-              onPress={id => dispatch({ type: 'SP_TAP_TILE', tileId: id })}
-              disabled={tile.used || !isPlaying}
-            />
-          ))}
-        </View>
-
-        {/* Operators */}
-        {isPlaying && (
-          <View style={styles.operatorsRow}>
-            {(['+', '-', '×', '÷', '(', ')'] as Operator[]).map(op => (
-              <OperatorButton
-                key={op}
-                operator={op}
-                onPress={o => dispatch({ type: 'SP_TAP_OPERATOR', operator: o })}
-                disabled={false}
-              />
-            ))}
-          </View>
-        )}
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
@@ -122,6 +97,31 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
       </ScrollView>
 
       <View style={[styles.footer, { backgroundColor: theme.headerFooterBg }]}>
+        {/* Number tiles — single row */}
+        <View style={styles.tilesRow}>
+          {state.tiles.map(tile => (
+            <NumberTile
+              key={tile.id}
+              tile={tile}
+              onPress={id => dispatch({ type: 'SP_TAP_TILE', tileId: id })}
+              disabled={tile.used || !isPlaying}
+            />
+          ))}
+        </View>
+
+        {/* Operators */}
+        {isPlaying && (
+          <View style={styles.operatorsRow}>
+            {(['+', '-', '×', '÷', '(', ')'] as Operator[]).map(op => (
+              <OperatorButton
+                key={op}
+                operator={op}
+                onPress={o => dispatch({ type: 'SP_TAP_OPERATOR', operator: o })}
+                disabled={false}
+              />
+            ))}
+          </View>
+        )}
         {isPlaying && (
           <View style={styles.controlsRow}>
             <TouchableOpacity
@@ -208,7 +208,8 @@ const styles = StyleSheet.create({
   controlsRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 8,
+    marginTop: 24,
+    marginBottom: 24,
   },
   resetBtn: {
     flex: 1,
@@ -243,13 +244,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     flexWrap: 'nowrap',
-    marginTop: 6,
   },
   operatorsRow: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     flexWrap: 'wrap',
-    marginBottom: 4,
   },
   footer: {
     paddingHorizontal: 20,
