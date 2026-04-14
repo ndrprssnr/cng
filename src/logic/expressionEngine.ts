@@ -15,16 +15,18 @@ function isOperator(op: string): op is Operator {
 }
 
 function applyOp(op: Operator, a: number, b: number): number | null {
+  let result: number;
   switch (op) {
-    case '+': return a + b;
-    case '-': return a - b;
-    case '×': return a * b;
+    case '+': result = a + b; break;
+    case '-': result = a - b; break;
+    case '×': result = a * b; break;
     case '÷':
-      if (b === 0) return null;
-      if (a % b !== 0) return null;
-      return a / b;
+      if (b === 0 || a % b !== 0) return null;
+      result = a / b;
+      break;
     default: return null;
   }
+  return result < 0 ? null : result;
 }
 
 function isBalanced(tokens: ExpressionToken[]): boolean {
