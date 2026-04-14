@@ -16,7 +16,6 @@ export interface Theme {
   addLineBorder: string;
   addLineText: string;
   actionBtnBg: string;
-  actionBtnDisabledBg: string;
   actionBtnText: string;
   primaryText: string;
   tokenText: string;
@@ -69,7 +68,6 @@ export const darkTheme: Theme = {
   addLineBorder: '#37474f',
   addLineText: '#607d8b',
   actionBtnBg: '#1e3a5f',
-  actionBtnDisabledBg: '#263238',
   actionBtnText: '#ffffff',
   primaryText: '#ffffff',
   tokenText: '#e0e0e0',
@@ -122,7 +120,6 @@ export const lightTheme: Theme = {
   addLineBorder: '#b0bec5',
   addLineText: '#546e7a',
   actionBtnBg: '#125aac',
-  actionBtnDisabledBg: '#bdbdbd',
   actionBtnText: '#ffffff',
   primaryText: '#1a1a1a',
   tokenText: '#212121',

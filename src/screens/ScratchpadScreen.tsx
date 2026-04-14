@@ -143,7 +143,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                 style={[
                   styles.actionBtn,
                   { backgroundColor: theme.actionBtnBg },
-                  !state.snapshot && [styles.actionBtnDisabled, { backgroundColor: theme.actionBtnDisabledBg }],
+                  !state.snapshot && styles.actionBtnDisabled,
                 ]}
                 onPress={() => dispatch({ type: 'SP_RESTORE_SNAPSHOT' })}
                 disabled={!state.snapshot}
@@ -161,7 +161,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
             style={[
               styles.actionBtn,
               { backgroundColor: theme.actionBtnBg },
-              !state.lines.some(l => l.result !== null) && [styles.actionBtnDisabled, { backgroundColor: theme.actionBtnDisabledBg }],
+              !state.lines.some(l => l.result !== null) && styles.actionBtnDisabled,
             ]}
             onPress={() => dispatch({ type: 'SP_SUBMIT' })}
             disabled={!state.lines.some(l => l.result !== null)}
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionBtnDisabled: {
-    opacity: 0.5,
+    opacity: 0.2,
   },
   snapshotCol: {
     flex: 1,
