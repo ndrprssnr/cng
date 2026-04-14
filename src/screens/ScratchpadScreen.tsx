@@ -125,31 +125,31 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
         {isPlaying && (
           <View style={styles.controlsRow}>
             <TouchableOpacity
-              style={[styles.resetBtn, { borderColor: theme.resetBorder }]}
+              style={[styles.resetBtn, { backgroundColor: theme.resetBg }]}
               onPress={() => dispatch({ type: 'SP_RESET' })}
               activeOpacity={0.8}
             >
-              <Text style={[styles.resetBtnText, { color: theme.resetText }]}>Reset</Text>
+              <Text style={styles.controlBtnText}>Reset</Text>
             </TouchableOpacity>
             <View style={styles.snapshotCol}>
               <TouchableOpacity
-                style={[styles.snapshotBtn, { borderColor: theme.snapshotBorder }]}
+                style={[styles.snapshotBtn, { backgroundColor: theme.snapshotBg }]}
                 onPress={() => dispatch({ type: 'SP_SAVE_SNAPSHOT' })}
                 activeOpacity={0.8}
               >
-                <Text style={[styles.snapshotBtnText, { color: theme.snapshotText }]}>Save</Text>
+                <Text style={styles.controlBtnText}>Save</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.snapshotBtn,
-                  { borderColor: state.snapshot ? theme.snapshotBorder : theme.snapshotBorderDisabled },
+                  { backgroundColor: theme.snapshotBg },
                   !state.snapshot && styles.snapshotBtnDisabled,
                 ]}
                 onPress={() => dispatch({ type: 'SP_RESTORE_SNAPSHOT' })}
                 disabled={!state.snapshot}
                 activeOpacity={0.8}
               >
-                <Text style={[styles.snapshotBtnText, { color: theme.snapshotText }]}>
+                <Text style={styles.controlBtnText}>
                   Restore {state.snapshot ? (state.snapshot.bestResult !== null ? `(${state.snapshot.bestResult})` : '(/)') : ''}
                 </Text>
               </TouchableOpacity>
@@ -215,13 +215,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 8,
     borderRadius: 8,
-    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  resetBtnText: {
-    fontSize: 13,
-    fontWeight: '600',
   },
   snapshotCol: {
     flex: 1,
@@ -230,15 +225,15 @@ const styles = StyleSheet.create({
   snapshotBtn: {
     paddingVertical: 8,
     borderRadius: 8,
-    borderWidth: 1,
     alignItems: 'center',
   },
   snapshotBtnDisabled: {
     opacity: 0.4,
   },
-  snapshotBtnText: {
+  controlBtnText: {
     fontSize: 13,
     fontWeight: '600',
+    color: '#ffffff',
   },
   tilesRow: {
     flexDirection: 'row',

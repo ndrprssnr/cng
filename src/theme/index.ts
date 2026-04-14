@@ -15,11 +15,8 @@ export interface Theme {
   lineNumColor: string;
   addLineBorder: string;
   addLineText: string;
-  resetBorder: string;
-  resetText: string;
-  snapshotBorder: string;
-  snapshotBorderDisabled: string;
-  snapshotText: string;
+  resetBg: string;
+  snapshotBg: string;
   submitBg: string;
   submitDisabledBg: string;
   primaryText: string;
@@ -73,11 +70,8 @@ export const darkTheme: Theme = {
   lineNumColor: '#546e7a',
   addLineBorder: '#37474f',
   addLineText: '#607d8b',
-  resetBorder: '#b71c1c',
-  resetText: '#e57373',
-  snapshotBorder: '#1565c0',
-  snapshotBorderDisabled: '#37474f',
-  snapshotText: '#90caf9',
+  resetBg: '#4a1010',
+  snapshotBg: '#1565c0',
   submitBg: '#1565c0',
   submitDisabledBg: '#263238',
   primaryText: '#ffffff',
@@ -131,11 +125,8 @@ export const lightTheme: Theme = {
   lineNumColor: '#78909c',
   addLineBorder: '#b0bec5',
   addLineText: '#546e7a',
-  resetBorder: '#b71c1c',
-  resetText: '#c62828',
-  snapshotBorder: '#1976d2',
-  snapshotBorderDisabled: '#b0bec5',
-  snapshotText: '#1565c0',
+  resetBg: '#b71c1c',
+  snapshotBg: '#1976d2',
   submitBg: '#1976d2',
   submitDisabledBg: '#bdbdbd',
   primaryText: '#1a1a1a',
