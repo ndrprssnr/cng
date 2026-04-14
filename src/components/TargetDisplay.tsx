@@ -35,7 +35,7 @@ export default function TargetDisplay({ target, exactSolvable }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: theme.targetBg }]}>
       <TouchableOpacity style={styles.toggleBtn} onPress={toggleTheme} activeOpacity={0.7}>
-        <Text style={styles.toggleIcon}>{themeName === 'dark' ? '☼' : '☽'}</Text>
+        <Text style={[styles.toggleIcon, { color: theme.targetLabel }]}>{themeName === 'dark' ? '☉︎' : '☾'}</Text>
       </TouchableOpacity>
       <View style={styles.labelRow}>
         <Text style={[styles.label, { color: theme.targetLabel }]}>TARGET</Text>
@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
   },
   toggleIcon: {
     fontSize: 26,
-    color: '#fff',
     textAlign: 'center',
   },
   labelRow: {
