@@ -125,11 +125,11 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
         {isPlaying && (
           <View style={styles.controlsRow}>
             <TouchableOpacity
-              style={[styles.resetBtn, { backgroundColor: theme.resetBg, borderColor: theme.resetBorder }]}
+              style={[styles.resetBtn, { backgroundColor: theme.resetBg }]}
               onPress={() => dispatch({ type: 'SP_RESET' })}
               activeOpacity={0.8}
             >
-            <Text style={[styles.controlBtnText, { color: theme.resetBtnText }]}>Reset</Text>
+            <Text style={[styles.controlBtnText, { color: theme.targetNumber }]}>Clear all</Text>
             </TouchableOpacity>
             <View style={styles.snapshotCol}>
               <TouchableOpacity
@@ -142,7 +142,8 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
               <TouchableOpacity
                 style={[
                   styles.snapshotBtn,
-                  { backgroundColor: state.snapshot ? theme.snapshotBg : theme.snapshotDisabledBg },
+                  { backgroundColor: theme.snapshotBg },
+                  !state.snapshot && [styles.submitDisabled, { backgroundColor:  theme.snapshotDisabledBg }],
                 ]}
                 onPress={() => dispatch({ type: 'SP_RESTORE_SNAPSHOT' })}
                 disabled={!state.snapshot}
