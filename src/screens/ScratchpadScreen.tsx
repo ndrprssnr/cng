@@ -125,7 +125,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
         {isPlaying && (
           <View style={styles.controlsRow}>
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: theme.actionBtnBg }]}
+              style={[styles.actionBtn, { flex: 1, backgroundColor: theme.actionBtnBg }]}
               onPress={() => dispatch({ type: 'SP_RESET' })}
               activeOpacity={0.8}
             >
@@ -149,7 +149,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                 disabled={!state.snapshot}
                 activeOpacity={0.8}
               >
-                <Text style={[styles.controlBtnText, { color: theme.actionBtnText }]}>
+                <Text style={[styles.controlBtnText, { color: state.snapshot ? theme.actionBtnText : theme.actionBtnDisabledText }]}>
                   Restore {state.snapshot ? (state.snapshot.bestResult !== null ? `(${state.snapshot.bestResult})` : '(/)') : ''}
                 </Text>
               </TouchableOpacity>
@@ -167,7 +167,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
             disabled={!state.lines.some(l => l.result !== null)}
             activeOpacity={0.8}
           >
-            <Text style={[styles.submitText, { color: theme.actionBtnText }]}>Submit</Text>
+            <Text style={[styles.submitText, { color: state.lines.some(l => l.result !== null) ? theme.actionBtnText : theme.actionBtnDisabledText }]}>Submit</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
@@ -212,7 +212,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   actionBtn: {
-    flex: 1,
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: 'center',

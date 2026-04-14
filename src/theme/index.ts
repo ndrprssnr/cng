@@ -17,6 +17,7 @@ export interface Theme {
   addLineText: string;
   actionBtnBg: string;
   actionBtnText: string;
+  actionBtnDisabledText: string;
   primaryText: string;
   tokenText: string;
   tokenStale: string;
@@ -69,6 +70,7 @@ export const darkTheme: Theme = {
   addLineText: '#607d8b',
   actionBtnBg: '#1e3a5f',
   actionBtnText: '#ffffff',
+  actionBtnDisabledText: '#ffffff',
   primaryText: '#ffffff',
   tokenText: '#e0e0e0',
   tokenStale: '#e53935',
@@ -121,6 +123,7 @@ export const lightTheme: Theme = {
   addLineText: '#546e7a',
   actionBtnBg: '#125aac',
   actionBtnText: '#ffffff',
+  actionBtnDisabledText: '#757575',
   primaryText: '#1a1a1a',
   tokenText: '#212121',
   tokenStale: '#c62828',
