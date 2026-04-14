@@ -11,10 +11,11 @@ interface Props {
   target: number;
   onTokenPress: (index: number) => void;
   cursorActive?: boolean;
+  showPlaceholder?: boolean;
   lineNumberMap?: Map<string, number>;
 }
 
-export default function ExpressionDisplay({ tokens, cursorPos, result, target, onTokenPress, cursorActive = true, lineNumberMap }: Props) {
+export default function ExpressionDisplay({ tokens, cursorPos, result, target, onTokenPress, cursorActive = true, showPlaceholder = true, lineNumberMap }: Props) {
   const { theme } = useTheme();
   const [cursorVisible, setCursorVisible] = useState(true);
 
@@ -44,7 +45,9 @@ export default function ExpressionDisplay({ tokens, cursorPos, result, target, o
     exprContent = (
       <>
         {cursor}
-        <Text style={[styles.placeholder, { color: theme.placeholder }]}>Tap numbers and operators...</Text>
+        {showPlaceholder && (
+          <Text style={[styles.placeholder, { color: theme.placeholder }]}>Tap numbers and operators...</Text>
+        )}
       </>
     );
   } else {

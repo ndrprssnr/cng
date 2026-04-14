@@ -82,7 +82,6 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                     onActivate={() => dispatch({ type: 'SP_SET_ACTIVE_LINE', lineId: line.id })}
                     onTokenPress={pos => dispatch({ type: 'SP_SET_CURSOR', lineId: line.id, pos })}
                     onResultTileTap={() => rt && dispatch({ type: 'SP_TAP_RESULT', resultId: rt.id })}
-                    onDelete={() => dispatch({ type: 'SP_DELETE_LINE', lineId: line.id })}
                     onCursorLeft={() => dispatch({ type: 'SP_MOVE_CURSOR', delta: -1 })}
                     onCursorRight={() => dispatch({ type: 'SP_MOVE_CURSOR', delta: 1 })}
                     onBackspace={() => dispatch({ type: 'SP_BACKSPACE' })}
@@ -93,16 +92,6 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                 );
               });
             })()}
-
-            {isPlaying && (
-              <TouchableOpacity
-                style={[styles.addLine, { borderColor: theme.addLineBorder }]}
-                onPress={() => dispatch({ type: 'SP_ADD_LINE' })}
-                activeOpacity={0.8}
-              >
-                <Text style={[styles.addLineText, { color: theme.addLineText }]}>+ Add line</Text>
-              </TouchableOpacity>
-            )}
           </View>
 
 
@@ -211,18 +200,6 @@ const styles = StyleSheet.create({
     paddingTop: 6,
   },
   linesArea: {
-  },
-  addLine: {
-    marginTop: 4,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    alignItems: 'center',
-  },
-  addLineText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
   controlsRow: {
     flexDirection: 'row',

@@ -155,7 +155,7 @@ function recomputeLine(
 function createInitialState(gameId: number): ScratchpadState {
   const tiles = buildTiles();
   const target = generateTarget();
-  const firstLine = emptyLine();
+  const lines = [emptyLine(), emptyLine(), emptyLine(), emptyLine(), emptyLine()];
   return {
     phase: 'playing',
     gameId,
@@ -163,8 +163,8 @@ function createInitialState(gameId: number): ScratchpadState {
     target,
     exactSolvable: null,
     precomputedSolution: null,
-    lines: [firstLine],
-    activeLineId: firstLine.id,
+    lines,
+    activeLineId: lines[0].id,
     resultTiles: [],
     score: null,
     bestSolution: null,
@@ -283,13 +283,13 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
     }
 
     case 'SP_RESET': {
-      // Reset the entire scratchpad: free all tiles, start with one empty line
-      const newLine = emptyLine();
+      // Clear all lines: free all tiles, reset each line's expression in place
+      const clearedLines = state.lines.map(l => ({ ...l, expression: [], cursorPos: 0, result: null }));
       return {
         ...state,
         tiles: state.tiles.map(t => ({ ...t, used: false })),
-        lines: [newLine],
-        activeLineId: newLine.id,
+        lines: clearedLines,
+        activeLineId: clearedLines[0].id,
         resultTiles: [],
       };
     }
@@ -423,23 +423,9 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
 }
 
 /**
- * After any expression change on the active line, auto-append a new empty line
- * when the active line has a valid result and is the last non-empty one.
+ * After any expression change, no auto-append — lines are fixed at 5.
  */
 function checkWinAndAutoLine(state: ScratchpadState): ScratchpadState {
-  const activeLine = state.lines.find(l => l.id === state.activeLineId);
-  if (!activeLine) return state;
-
-  const lastLine = state.lines[state.lines.length - 1];
-  if (
-    activeLine.result !== null &&
-    activeLine.id === lastLine.id &&
-    lastLine.expression.length > 0
-  ) {
-    const newLine = emptyLine();
-    return { ...state, lines: [...state.lines, newLine] };
-  }
-
   return state;
 }
 

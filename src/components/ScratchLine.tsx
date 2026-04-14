@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import {
-  View, Text, TouchableOpacity, Animated, PanResponder,
-  Platform, StyleSheet,
+  View, Text, TouchableOpacity,
+  StyleSheet,
 } from 'react-native';
 import { ScratchLine as ScratchLineData, ResultTile } from '../types/scratchpad';
 import ExpressionDisplay from './ExpressionDisplay';
@@ -19,7 +19,6 @@ interface Props {
   onTokenPress: (pos: number) => void;
   onActivate: () => void;
   onResultTileTap: () => void;
-  onDelete: () => void;
   onCursorLeft: () => void;
   onCursorRight: () => void;
   onBackspace: () => void;
@@ -27,8 +26,6 @@ interface Props {
   cursorAtStart: boolean;
   cursorAtEnd: boolean;
 }
-
-const SWIPE_THRESHOLD = -60;
 
 export default function ScratchLine({
   line,
@@ -42,7 +39,6 @@ export default function ScratchLine({
   onTokenPress,
   onActivate,
   onResultTileTap,
-  onDelete,
   onCursorLeft,
   onCursorRight,
   onBackspace,
@@ -51,27 +47,6 @@ export default function ScratchLine({
   cursorAtEnd,
 }: Props) {
   const { theme } = useTheme();
-  const [swipeRevealed, setSwipeRevealed] = useState(false);
-  const translateX = useRef(new Animated.Value(0)).current;
-  const isWeb = Platform.OS === 'web';
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gs) => Math.abs(gs.dx) > 8 && Math.abs(gs.dy) < 20,
-      onPanResponderMove: (_, gs) => {
-        if (gs.dx < 0) translateX.setValue(Math.max(gs.dx, SWIPE_THRESHOLD));
-      },
-      onPanResponderRelease: (_, gs) => {
-        if (gs.dx < SWIPE_THRESHOLD / 2) {
-          Animated.spring(translateX, { toValue: SWIPE_THRESHOLD, useNativeDriver: true }).start();
-          setSwipeRevealed(true);
-        } else {
-          Animated.spring(translateX, { toValue: 0, useNativeDriver: true }).start();
-          setSwipeRevealed(false);
-        }
-      },
-    })
-  ).current;
 
   const resultColor =
     line.result === null ? theme.resultNull
@@ -84,23 +59,11 @@ export default function ScratchLine({
   return (
     <View style={styles.wrapper}>
       <View style={styles.rowContainer}>
-        {/* Delete button revealed behind swipe (mobile) */}
-        {!isWeb && (
-          <TouchableOpacity
-            style={[styles.deleteBack, { backgroundColor: theme.deleteBg }]}
-            onPress={onDelete}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.deleteBackText}>🗑</Text>
-          </TouchableOpacity>
-        )}
-        <Animated.View
+        <View
           style={[
             styles.row,
             { backgroundColor: theme.rowBg, borderColor: isActive ? theme.rowActiveBorder : 'transparent' },
-            !isWeb && { transform: [{ translateX }] },
           ]}
-          {...(!isWeb ? panResponder.panHandlers : {})}
         >
           <Text style={[styles.lineNum, { color: theme.lineNumColor }]}>{lineNumber}</Text>
           <TouchableOpacity
@@ -115,6 +78,7 @@ export default function ScratchLine({
               target={target}
               onTokenPress={pos => { onActivate(); onTokenPress(pos); }}
               cursorActive={isActive}
+              showPlaceholder={lineNumber === 1}
               lineNumberMap={lineNumberMap}
             />
           </TouchableOpacity>
@@ -137,19 +101,8 @@ export default function ScratchLine({
                 </Text>
               </TouchableOpacity>
             )}
-
-            {/* Trash icon — always visible on web, hidden on mobile (swipe instead) */}
-            {isWeb && (
-              <TouchableOpacity
-                style={[styles.trashBtn, { backgroundColor: theme.trashBtnBg }]}
-                onPress={onDelete}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.trashText}>🗑</Text>
-              </TouchableOpacity>
-            )}
           </View>
-        </Animated.View>
+        </View>
       </View>
 
       {isActive && isPlaying && (
@@ -194,20 +147,6 @@ const styles = StyleSheet.create({
   rowContainer: {
     position: 'relative',
   },
-  deleteBack: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: 56,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  deleteBackText: {
-    fontSize: 20,
-  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -247,16 +186,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     fontFamily: 'monospace',
-  },
-  trashBtn: {
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 6,
-  },
-  trashText: {
-    fontSize: 16,
   },
   inlineBar: {
     flexDirection: 'row',
