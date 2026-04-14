@@ -63,7 +63,7 @@ export const darkTheme: Theme = {
   rowActiveBorder: '#1565c0',
   paperBg: '#1a1a2e',
   paperBorder: '#37474f',
-  paperRule: '#2a2a4a',
+  paperRule: '#323260',
   resultTileBg: '#263238',
   resultTileBorder: '#546e7a',
   inlineBtnBg: '#263238',
