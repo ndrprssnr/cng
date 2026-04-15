@@ -17,8 +17,8 @@ export default function OperatorButton({ operator, onPress, disabled }: Props) {
     <TouchableOpacity
       style={[
         styles.button,
-        { backgroundColor: disabled ? theme.operatorBtnDisabledBg : theme.operatorBtnBg },
-        !disabled && { borderWidth: 1, borderColor: theme.operatorBtnBorder },
+        { backgroundColor: disabled ? theme.operatorBtnDisabledBg : theme.operatorBtnBg,
+          borderColor: disabled ? 'transparent' : theme.operatorBtnBorder },
         disabled && styles.disabled,
       ]}
       onPress={() => onPress(operator)}
@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderRadius: 8,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,

@@ -17,8 +17,8 @@ export default function NumberTile({ tile, onPress, disabled }: Props) {
     <TouchableOpacity
       style={[
         styles.tile,
-        { backgroundColor: disabled ? theme.numberTileDisabledBg : theme.numberTileBg },
-        !disabled && { borderWidth: 1, borderColor: theme.numberTileBorder },
+        { backgroundColor: disabled ? theme.numberTileDisabledBg : theme.numberTileBg,
+          borderColor: disabled ? 'transparent' : theme.numberTileBorder },
         disabled && styles.disabled,
       ]}
       onPress={() => onPress(tile.id)}
@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderRadius: 10,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
