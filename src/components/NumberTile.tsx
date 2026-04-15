@@ -18,6 +18,7 @@ export default function NumberTile({ tile, onPress, disabled }: Props) {
       style={[
         styles.tile,
         { backgroundColor: disabled ? theme.numberTileDisabledBg : theme.numberTileBg },
+        !disabled && { borderWidth: 1, borderColor: theme.numberTileBorder },
         disabled && styles.disabled,
       ]}
       onPress={() => onPress(tile.id)}

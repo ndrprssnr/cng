@@ -18,6 +18,7 @@ export default function OperatorButton({ operator, onPress, disabled }: Props) {
       style={[
         styles.button,
         { backgroundColor: disabled ? theme.operatorBtnDisabledBg : theme.operatorBtnBg },
+        !disabled && { borderWidth: 1, borderColor: theme.operatorBtnBorder },
         disabled && styles.disabled,
       ]}
       onPress={() => onPress(operator)}

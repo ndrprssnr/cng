@@ -125,7 +125,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
         {isPlaying && (
           <View style={styles.controlsRow}>
             <TouchableOpacity
-              style={[styles.actionBtn, { flex: 1, backgroundColor: theme.actionBtnBg }]}
+              style={[styles.actionBtn, { flex: 1, backgroundColor: theme.actionBtnBg, borderWidth: 1, borderColor: theme.actionBtnBorder }]}
               onPress={() => dispatch({ type: 'SP_RESET' })}
               activeOpacity={0.8}
             >
@@ -133,7 +133,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
             </TouchableOpacity>
             <View style={styles.snapshotCol}>
               <TouchableOpacity
-                style={[styles.actionBtn, { backgroundColor: theme.actionBtnBg }]}
+                style={[styles.actionBtn, { backgroundColor: theme.actionBtnBg, borderWidth: 1, borderColor: theme.actionBtnBorder }]}
                 onPress={() => dispatch({ type: 'SP_SAVE_SNAPSHOT' })}
                 activeOpacity={0.8}
               >
@@ -142,7 +142,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
               <TouchableOpacity
                 style={[
                   styles.actionBtn,
-                  { backgroundColor: theme.actionBtnBg },
+                  { backgroundColor: theme.actionBtnBg, borderWidth: 1, borderColor: theme.actionBtnBorder },
                   !state.snapshot && styles.actionBtnDisabled,
                 ]}
                 onPress={() => dispatch({ type: 'SP_RESTORE_SNAPSHOT' })}
@@ -160,7 +160,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
           <TouchableOpacity
             style={[
               styles.actionBtn,
-              { backgroundColor: theme.actionBtnBg },
+              { backgroundColor: theme.actionBtnBg, borderWidth: 1, borderColor: theme.actionBtnBorder },
               !state.lines.some(l => l.result !== null) && styles.actionBtnDisabled,
             ]}
             onPress={() => dispatch({ type: 'SP_SUBMIT' })}
@@ -250,7 +250,9 @@ const styles = StyleSheet.create({
     paddingVertical: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2e7d32',
+    backgroundColor: '#00695c',
+    borderWidth: 1,
+    borderColor: '#004d40',
   },
   newGameText: {
     fontSize: 18,

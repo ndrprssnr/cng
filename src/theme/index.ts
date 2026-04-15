@@ -16,6 +16,7 @@ export interface Theme {
   addLineBorder: string;
   addLineText: string;
   actionBtnBg: string;
+  actionBtnBorder: string;
   actionBtnText: string;
   actionBtnDisabledText: string;
   primaryText: string;
@@ -31,9 +32,11 @@ export interface Theme {
   resultClose: string;
   resultFar: string;
   numberTileBg: string;
+  numberTileBorder: string;
   numberTileDisabledBg: string;
   numberTileDisabledText: string;
   operatorBtnBg: string;
+  operatorBtnBorder: string;
   operatorBtnDisabledBg: string;
   operatorBtnDisabledText: string;
   targetBg: string;
@@ -69,6 +72,7 @@ export const darkTheme: Theme = {
   addLineBorder: '#37474f',
   addLineText: '#607d8b',
   actionBtnBg: '#1e3a5f',
+  actionBtnBorder: '#0d2035',
   actionBtnText: '#ffffff',
   actionBtnDisabledText: '#ffffff',
   primaryText: '#ffffff',
@@ -84,9 +88,11 @@ export const darkTheme: Theme = {
   resultClose: '#ff9800',
   resultFar: '#90caf9',
   numberTileBg: '#c47500',
+  numberTileBorder: '#8b5400',
   numberTileDisabledBg: '#3a3a3a',
   numberTileDisabledText: '#888',
   operatorBtnBg: '#1565c0',
+  operatorBtnBorder: '#0a3d80',
   operatorBtnDisabledBg: '#333',
   operatorBtnDisabledText: '#666',
   targetBg: '#c0392b',
@@ -122,6 +128,7 @@ export const lightTheme: Theme = {
   addLineBorder: '#b0bec5',
   addLineText: '#546e7a',
   actionBtnBg: '#125aac',
+  actionBtnBorder: '#0a3d7a',
   actionBtnText: '#ffffff',
   actionBtnDisabledText: '#757575',
   primaryText: '#1a1a1a',
@@ -137,9 +144,11 @@ export const lightTheme: Theme = {
   resultClose: '#ff9800',
   resultFar: '#1565c0',
   numberTileBg: '#e67e00',
+  numberTileBorder: '#b35e00',
   numberTileDisabledBg: '#bdbdbd',
   numberTileDisabledText: '#757575',
   operatorBtnBg: '#1976d2',
+  operatorBtnBorder: '#124a8a',
   operatorBtnDisabledBg: '#e0e0e0',
   operatorBtnDisabledText: '#9e9e9e',
   targetBg: '#c62828',
