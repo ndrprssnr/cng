@@ -171,11 +171,11 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            style={[styles.actionBtn, { backgroundColor: theme.actionBtnBg }]}
+            style={styles.newGameBtn}
             onPress={onNewGame}
             activeOpacity={0.8}
           >
-            <Text style={[styles.newGameText, { color: theme.actionBtnText }]}>New Game</Text>
+            <Text style={styles.newGameText}>New Game</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -245,8 +245,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  newGameBtn: {
+    borderRadius: 10,
+    paddingVertical: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#2e7d32',
+  },
   newGameText: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#ffffff',
   },
 });
