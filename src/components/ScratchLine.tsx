@@ -89,7 +89,7 @@ export default function ScratchLine({
             onPress={onClear}
             activeOpacity={0.8}
           >
-            <Text style={[styles.inlineBtnText, { color: theme.inlineBtnText }]}>{'🗑\uFE0E'}</Text>
+            <Text style={[styles.inlineBtnText, { color: theme.inlineBtnText }]}>⌧</Text>
           </TouchableOpacity>
         </View>
       )}
