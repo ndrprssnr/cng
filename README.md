@@ -16,7 +16,7 @@ Your goal is to combine the numbers using **addition, subtraction, multiplicatio
 - Each number may only be used **once**.
 - You may use parentheses to control the order of operations.
 - Division is only allowed if it divides **exactly** (no fractions).
-- All intermediate results must be **whole numbers**.
+- All intermediate results must be **whole non-negative numbers**.
 
 ### Controls
 
@@ -39,7 +39,7 @@ After submitting, the app reveals the best possible solution (or the closest rea
 
 ### Hint
 
-A small dot below the target number gives you a subtle clue:
+A small dot above the target number gives you a subtle clue:
 - **Green dot** — an exact solution exists.
 - **Soft red dot** — no exact solution is possible with these numbers.
 
