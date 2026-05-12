@@ -25,6 +25,9 @@ interface Props {
 export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) {
   const { theme } = useTheme();
   const isPlaying = state.phase === 'playing';
+  const activeLine = state.lines.find(l => l.id === state.activeLineId);
+  const cursorAtStart = (activeLine?.cursorPos ?? 0) === 0;
+  const cursorAtEnd = (activeLine?.cursorPos ?? 0) === (activeLine?.expression.length ?? 0);
 
   return (
     <View style={styles.safe}>
@@ -48,7 +51,6 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                     key={line.id}
                     line={line}
                     isActive={line.id === state.activeLineId}
-                    isPlaying={isPlaying}
                     isLast={idx === state.lines.length - 1}
                     target={state.target}
                     resultTile={rt}
@@ -58,12 +60,6 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                     onActivate={() => dispatch({ type: 'SP_SET_ACTIVE_LINE', lineId: line.id })}
                     onTokenPress={pos => dispatch({ type: 'SP_SET_CURSOR', lineId: line.id, pos })}
                     onResultTileTap={() => rt && dispatch({ type: 'SP_TAP_RESULT', resultId: rt.id })}
-                    onCursorLeft={() => dispatch({ type: 'SP_MOVE_CURSOR', delta: -1 })}
-                    onCursorRight={() => dispatch({ type: 'SP_MOVE_CURSOR', delta: 1 })}
-                    onBackspace={() => dispatch({ type: 'SP_BACKSPACE' })}
-                    onClear={() => dispatch({ type: 'SP_CLEAR_LINE' })}
-                    cursorAtStart={line.cursorPos === 0}
-                    cursorAtEnd={line.cursorPos === line.expression.length}
                   />
                 );
               });
@@ -122,15 +118,41 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
             ))}
           </View>
         )}
+        {/* Navigation */}
         {isPlaying && (
-          <View style={styles.controlsRow}>
+          <View style={styles.navRow}>
             <TouchableOpacity
-              style={[styles.actionBtn, { flex: 1, backgroundColor: theme.actionBtnBg, borderColor: theme.actionBtnBorder }]}
-              onPress={() => dispatch({ type: 'SP_RESET' })}
+              style={[styles.navBtn, { backgroundColor: theme.inlineBtnBg }, cursorAtStart && styles.navBtnDimmed]}
+              onPress={() => dispatch({ type: 'SP_MOVE_CURSOR', delta: -1 })}
+              disabled={cursorAtStart} activeOpacity={0.8}
+            >
+              <Text style={[styles.navBtnText, { color: theme.inlineBtnText }]}>◀</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.navBtn, { backgroundColor: theme.inlineBtnBg }, cursorAtEnd && styles.navBtnDimmed]}
+              onPress={() => dispatch({ type: 'SP_MOVE_CURSOR', delta: 1 })}
+              disabled={cursorAtEnd} activeOpacity={0.8}
+            >
+              <Text style={[styles.navBtnText, { color: theme.inlineBtnText }]}>▶</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.navBtn, { backgroundColor: theme.inlineBtnBg }]}
+              onPress={() => dispatch({ type: 'SP_BACKSPACE' })}
               activeOpacity={0.8}
             >
-              <Text style={[styles.controlBtnText, { color: theme.actionBtnText }]}>Clear all</Text>
+              <Text style={[styles.navBtnText, { color: theme.inlineBtnText }]}>⌫</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.navBtn, { backgroundColor: theme.inlineBtnBg }]}
+              onPress={() => dispatch({ type: 'SP_CLEAR_LINE' })}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.navBtnText, { color: theme.inlineBtnText }]}>⌧</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {isPlaying && (
+          <View style={styles.controlsRow}>
             <View style={styles.snapshotCol}>
               <TouchableOpacity
                 style={[styles.actionBtn, { backgroundColor: theme.actionBtnBg, borderColor: theme.actionBtnBorder }]}
@@ -154,6 +176,13 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                 </Text>
               </TouchableOpacity>
             </View>
+            <TouchableOpacity
+              style={[styles.actionBtn, { flex: 1, backgroundColor: theme.actionBtnBg, borderColor: theme.actionBtnBorder }]}
+              onPress={() => dispatch({ type: 'SP_RESET' })}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.controlBtnText, { color: theme.actionBtnText }]}>Clear all</Text>
+            </TouchableOpacity>
           </View>
         )}
         {isPlaying ? (
@@ -237,6 +266,25 @@ const styles = StyleSheet.create({
   operatorsRow: {
     flexDirection: 'row',
     gap: 8,
+  },
+  navRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+  },
+  navBtn: {
+    flex: 1,
+    height: 48,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navBtnDimmed: {
+    opacity: 0.3,
+  },
+  navBtnText: {
+    fontSize: 15,
+    fontWeight: '600',
   },
   footer: {
     paddingHorizontal: 20,

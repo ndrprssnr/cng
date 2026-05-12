@@ -4,16 +4,13 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-
-import ExpressionDisplay from './ExpressionDisplay';
+} from 'react-native';import ExpressionDisplay from './ExpressionDisplay';
 import React from 'react';
 import { useTheme } from '../theme/ThemeContext';
 
 interface Props {
   line: ScratchLineData;
   isActive: boolean;
-  isPlaying: boolean;
   isLast: boolean;
   target: number;
   resultTile: ResultTile | null;
@@ -23,18 +20,11 @@ interface Props {
   onTokenPress: (pos: number) => void;
   onActivate: () => void;
   onResultTileTap: () => void;
-  onCursorLeft: () => void;
-  onCursorRight: () => void;
-  onBackspace: () => void;
-  onClear: () => void;
-  cursorAtStart: boolean;
-  cursorAtEnd: boolean;
 }
 
 export default function ScratchLine({
   line,
   isActive,
-  isPlaying,
   isLast,
   target,
   resultTile,
@@ -44,12 +34,6 @@ export default function ScratchLine({
   onTokenPress,
   onActivate,
   onResultTileTap,
-  onCursorLeft,
-  onCursorRight,
-  onBackspace,
-  onClear,
-  cursorAtStart,
-  cursorAtEnd,
 }: Props) {
   const { theme } = useTheme();
 
@@ -63,36 +47,6 @@ export default function ScratchLine({
 
   return (
     <View style={styles.wrapper}>
-      {isActive && isPlaying && (
-        <View style={styles.inlineBar}>
-          <TouchableOpacity
-            style={[styles.inlineBtn, { backgroundColor: theme.inlineBtnBg }, cursorAtStart && styles.inlineBtnDimmed]}
-            onPress={onCursorLeft} disabled={cursorAtStart} activeOpacity={0.8}
-          >
-            <Text style={[styles.inlineBtnText, { color: theme.inlineBtnText }]}>◀</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.inlineBtn, { backgroundColor: theme.inlineBtnBg }, cursorAtEnd && styles.inlineBtnDimmed]}
-            onPress={onCursorRight} disabled={cursorAtEnd} activeOpacity={0.8}
-          >
-            <Text style={[styles.inlineBtnText, { color: theme.inlineBtnText }]}>▶</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.inlineBtn, { backgroundColor: theme.inlineBtnBg }]}
-            onPress={onBackspace}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.inlineBtnText, { color: theme.inlineBtnText }]}>⌫</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.inlineBtn, { backgroundColor: theme.inlineBtnBg }]}
-            onPress={onClear}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.inlineBtnText, { color: theme.inlineBtnText }]}>⌧</Text>
-          </TouchableOpacity>
-        </View>
-      )}
       <View
         style={[
           styles.row,
@@ -188,25 +142,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     fontFamily: 'monospace',
-  },
-  inlineBar: {
-    flexDirection: 'row',
-    gap: 6,
-    marginBottom: 4,
-    marginTop: 2,
-    marginHorizontal: 4,
-  },
-  inlineBtn: {
-    flex: 1,
-    borderRadius: 8,
-    paddingVertical: 8,
-    alignItems: 'center',
-  },
-  inlineBtnDimmed: {
-    opacity: 0.3,
-  },
-  inlineBtnText: {
-    fontSize: 15,
-    fontWeight: '600',
   },
 });
