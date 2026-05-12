@@ -5,7 +5,7 @@ import { useEffect, useReducer } from 'react';
 
 import { computeScore } from '../logic/validation';
 import { getLiveResult } from '../logic/expressionEngine';
-import { solve } from '../logic/solver';
+import { solveAsync } from '../logic/solver';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -458,19 +458,21 @@ export function useScratchpadState() {
   useEffect(() => {
     const numbers = state.tiles.map(t => t.value);
     const target = state.target;
-    const timer = setTimeout(() => {
-      const solution = solve(numbers, target);
-      dispatch({
-        type: 'SP_SOLUTION_READY',
-        solution: solution ? {
-          expression: solution.expression,
-          result: solution.result,
-          numCount: solution.numCount,
-        } : null,
-        exactSolvable: solution !== null && solution.result === target,
-      });
-    }, 0);
-    return () => clearTimeout(timer);
+    const cancelRef = { cancelled: false };
+    solveAsync(numbers, target, cancelRef).then(solution => {
+      if (!cancelRef.cancelled) {
+        dispatch({
+          type: 'SP_SOLUTION_READY',
+          solution: solution ? {
+            expression: solution.expression,
+            result: solution.result,
+            numCount: solution.numCount,
+          } : null,
+          exactSolvable: solution !== null && solution.result === target,
+        });
+      }
+    });
+    return () => { cancelRef.cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.gameId]);
 

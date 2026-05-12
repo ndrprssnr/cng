@@ -170,3 +170,66 @@ export function solve(numbers: number[], target: number): SolverResult | null {
     numCount: bestRef.numCount,
   };
 }
+
+/**
+ * Async version of solve that yields the JS event loop between each top-level
+ * pair iteration. This keeps the countdown timer and other UI updates responsive
+ * while the brute-force search runs.
+ */
+export async function solveAsync(
+  numbers: number[],
+  target: number,
+  cancelRef: { cancelled: boolean }
+): Promise<SolverResult | null> {
+  if (numbers.length === 0) return null;
+
+  const pool: Pool = numbers.map(n => ({ value: n, expr: String(n), numCount: 1 }));
+  const bestRef: BestRef = { diff: Infinity, numCount: Infinity, result: null };
+
+  // Check each raw number in the pool as a candidate first
+  for (const item of pool) {
+    const diff = Math.abs(item.value - target);
+    if (isBetter(diff, item.numCount, bestRef)) {
+      bestRef.diff = diff;
+      bestRef.numCount = item.numCount;
+      bestRef.result = { value: item.value, expression: item.expr };
+    }
+    if (bestRef.diff === 0 && bestRef.numCount === 1) break;
+  }
+
+  // Iterate top-level pairs, yielding to the event loop between each one
+  outer: for (let i = 0; i < pool.length; i++) {
+    for (let j = i + 1; j < pool.length; j++) {
+      if (cancelRef.cancelled) break outer;
+      await new Promise<void>(resolve => setTimeout(resolve, 0));
+      if (cancelRef.cancelled) break outer;
+
+      const a = pool[i];
+      const b = pool[j];
+      const rest = pool.filter((_, idx) => idx !== i && idx !== j);
+
+      for (const op of OPS) {
+        const val1 = applyOp(op, a.value, b.value);
+        if (val1 !== null && val1 > 0) {
+          const fmt1 = formatExpr(a, op, b);
+          search([...rest, { value: val1, ...fmt1 }], target, bestRef);
+        }
+
+        if (op === '-' || op === '÷') {
+          const val2 = applyOp(op, b.value, a.value);
+          if (val2 !== null && val2 > 0) {
+            const fmt2 = formatExpr(b, op, a);
+            search([...rest, { value: val2, ...fmt2 }], target, bestRef);
+          }
+        }
+      }
+    }
+  }
+
+  if (!bestRef.result) return null;
+  return {
+    expression: bestRef.result.expression,
+    result: bestRef.result.value,
+    numCount: bestRef.numCount,
+  };
+}
