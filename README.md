@@ -2,8 +2,6 @@
 
 A mobile puzzle game inspired by the Numbers Round from the TV show *Countdown*. Built with React Native and Expo, runs on Android, iOS, and in the browser.
 
-> **Note:** The 30-second countdown timer from the TV show is not yet implemented. The game is currently played in a relaxed, untimed mode.
-
 ---
 
 ## How to Play
@@ -34,7 +32,27 @@ The game gives you **5 expression lines** to work in. Tap any line to make it ac
 6. Use **Clear all** to reset all 5 expression lines at once.
 7. Use **Save** to take a snapshot of your current scratchpad state and **Restore** to return to it.
 8. Tap **Submit** when you are happy with your expressions.
-9. Use the **theme toggle** (top-right of the target card) to switch between dark and light mode.
+9. Use the **theme toggle** (`⊙` / `☾`, top-right of the target card) to switch between dark and light mode.
+10. Use the **timer icon** (`⏱`, top-left of the target card) to open Timer Settings.
+
+### Timer Mode
+
+The game can be played in a relaxed, untimed mode (default) or with a configurable countdown timer to recreate the time pressure of the TV show.
+
+Tap the **`⏱`** icon on the target card to open Timer Settings:
+
+- **Timer Mode toggle** — enable or disable the countdown timer.
+- **Preset chips** — quickly select a common duration (30s, 45s, 1m, 1:30, 2m, 3m, 5m).
+- **Stepper** (`−` / `+`) — fine-tune the duration in 15-second increments.
+
+Changes take effect on the **next new game**. Toggling the timer off mid-game stops the countdown immediately.
+
+When the timer is active:
+
+- The remaining time is shown below the ⏱ icon in **green**.
+- At **10 seconds or less**, the display turns amber and pulses to signal urgency.
+- If time runs out with a valid result on the scratchpad, it is automatically submitted.
+- If time runs out with no valid result, the game ends and shows the best possible solution.
 
 ### Scoring
 
@@ -216,14 +234,18 @@ cng/
 │   │   ├── validation.ts          # Submission guard, scoring
 │   │   └── solver.ts              # Brute-force best-solution finder
 │   ├── hooks/
-│   │   └── useScratchpadState.ts  # useReducer — all game state and actions
+│   │   ├── useScratchpadState.ts  # useReducer — all game state and actions
+│   │   └── useCountdown.ts        # Wall-clock countdown timer hook
+│   ├── contexts/
+│   │   └── TimerSettingsContext.tsx  # Timer enabled/duration, persisted via AsyncStorage
 │   ├── components/
 │   │   ├── TargetDisplay.tsx
 │   │   ├── ExpressionDisplay.tsx
 │   │   ├── NumberTile.tsx
 │   │   ├── OperatorButton.tsx
 │   │   ├── ScratchLine.tsx
-│   │   └── ResultBanner.tsx
+│   │   ├── ResultBanner.tsx
+│   │   └── TimerSettingsModal.tsx  # Modal for configuring timer mode
 │   ├── screens/
 │   │   ├── GameScreen.tsx         # Root screen; mounts ScratchpadScreen
 │   │   └── ScratchpadScreen.tsx   # Full scratchpad UI
