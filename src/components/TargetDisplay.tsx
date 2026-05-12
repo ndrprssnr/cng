@@ -8,6 +8,7 @@ interface Props {
   exactSolvable: boolean | null;
   timerSecondsRemaining?: number | null;
   timerEnabled?: boolean;
+  timerDurationSeconds?: number;
   onTimerIconPress?: () => void;
 }
 
@@ -22,6 +23,7 @@ export default function TargetDisplay({
   exactSolvable,
   timerSecondsRemaining,
   timerEnabled,
+  timerDurationSeconds,
   onTimerIconPress,
 }: Props) {
   const { theme, themeName, toggleTheme } = useTheme();
@@ -78,11 +80,18 @@ export default function TargetDisplay({
   return (
     <View style={[styles.container, { backgroundColor: theme.targetBg }]}>
       {onTimerIconPress && (
-        <TouchableOpacity style={styles.timerBtn} onPress={onTimerIconPress} activeOpacity={0.7}>
-          <Text style={[styles.timerIcon, { color: theme.targetLabel, opacity: timerEnabled ? 1 : 0.4 }]}>
-            {'⏱︎'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.timerCol}>
+          <TouchableOpacity style={styles.timerBtn} onPress={onTimerIconPress} activeOpacity={0.7}>
+            <Text style={[styles.timerIcon, { color: theme.targetLabel }]}>
+              {'⏱︎'}
+            </Text>
+          </TouchableOpacity>
+          {timerEnabled && (
+            <Animated.Text style={[styles.timer, { color: timerColor, opacity: timerOpacity }]}>
+              {timerSecondsRemaining != null ? formatTime(timerSecondsRemaining) : formatTime(timerDurationSeconds ?? 30)}
+            </Animated.Text>
+          )}
+        </View>
       )}
       <TouchableOpacity style={styles.toggleBtn} onPress={toggleTheme} activeOpacity={0.7}>
         <Text style={[styles.toggleIcon, { color: theme.targetLabel }]}>{themeName === 'dark' ? '☉︎' : '☾'}</Text>
@@ -96,11 +105,6 @@ export default function TargetDisplay({
         )}
       </View>
       <Text style={[styles.target, { color: theme.targetNumber }]}>{target}</Text>
-      {timerSecondsRemaining != null && (
-        <Animated.Text style={[styles.timer, { color: timerColor, opacity: timerOpacity }]}>
-          {formatTime(timerSecondsRemaining)}
-        </Animated.Text>
-      )}
     </View>
   );
 }
@@ -116,17 +120,20 @@ const styles = StyleSheet.create({
     elevation: 6,
     position: 'relative',
   },
-  timerBtn: {
+  timerCol: {
     position: 'absolute',
     top: 8,
     left: 8,
+    alignItems: 'center',
+  },
+  timerBtn: {
     width: 48,
     height: 48,
     justifyContent: 'center',
     alignItems: 'center',
   },
   timerIcon: {
-    fontSize: 22,
+    fontSize: 26,
     textAlign: 'center',
   },
   toggleBtn: {
@@ -135,6 +142,8 @@ const styles = StyleSheet.create({
     right: 8,
     width: 48,
     height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   toggleIcon: {
     fontSize: 26,
@@ -162,9 +171,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   timer: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: '600',
     fontFamily: 'monospace',
-    marginTop: 2,
   },
 });

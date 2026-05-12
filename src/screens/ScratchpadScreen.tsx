@@ -46,6 +46,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
           exactSolvable={state.exactSolvable}
           timerSecondsRemaining={secondsRemaining}
           timerEnabled={settings.enabled}
+          timerDurationSeconds={settings.durationSeconds}
           onTimerIconPress={() => setTimerModalVisible(true)}
         />
 

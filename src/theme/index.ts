@@ -112,7 +112,7 @@ export const darkTheme: Theme = {
   solutionBoxBg: '#1a237e',
   solutionLabel: '#90caf9',
   solutionExpr: '#ffffff',
-  timerText: '#ffcdd2',
+  timerText: '#ffffff',
   timerUrgent: '#ffab00',
 };
 
