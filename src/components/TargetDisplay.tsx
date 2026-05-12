@@ -49,7 +49,7 @@ export default function TargetDisplay({
 
   useEffect(() => {
     if (!isUrgent) {
-      timerPulse.setValue(1);
+      timerPulse.setValue(0.5);
       return;
     }
     timerPulse.setValue(0);
@@ -62,7 +62,7 @@ export default function TargetDisplay({
       })
     );
     anim.start();
-    return () => { anim.stop(); timerPulse.setValue(1); };
+    return () => { anim.stop(); timerPulse.setValue(0.5); };
   }, [isUrgent]);
 
   const opacity = pulse.interpolate({
