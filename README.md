@@ -34,6 +34,7 @@ The game gives you **5 expression lines** to work in. Tap any line to make it ac
 6. Use **Clear all** to reset all 5 expression lines at once.
 7. Use **Save** to take a snapshot of your current scratchpad state and **Restore** to return to it.
 8. Tap **Submit** when you are happy with your expressions.
+9. Use the **theme toggle** (top-right of the target card) to switch between dark and light mode.
 
 ### Scoring
 
