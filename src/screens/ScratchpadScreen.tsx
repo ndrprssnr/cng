@@ -155,33 +155,33 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
           <View style={styles.controlsRow}>
             <View style={styles.snapshotCol}>
               <TouchableOpacity
-                style={[styles.actionBtn, { backgroundColor: theme.actionBtnBg, borderColor: theme.actionBtnBorder }]}
+                style={[styles.actionBtn, { backgroundColor: theme.inlineBtnBg, borderColor: theme.inlineBtnBorder }]}
                 onPress={() => dispatch({ type: 'SP_SAVE_SNAPSHOT' })}
                 activeOpacity={0.8}
               >
-                <Text style={[styles.controlBtnText, { color: theme.actionBtnText }]}>Save</Text>
+                <Text style={[styles.controlBtnText, { color: theme.inlineBtnText }]}>Save</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.actionBtn,
-                  { backgroundColor: theme.actionBtnBg, borderColor: theme.actionBtnBorder },
+                  { backgroundColor: theme.inlineBtnBg, borderColor: theme.inlineBtnBorder },
                   !state.snapshot && styles.actionBtnDisabled,
                 ]}
                 onPress={() => dispatch({ type: 'SP_RESTORE_SNAPSHOT' })}
                 disabled={!state.snapshot}
                 activeOpacity={0.8}
               >
-                <Text style={[styles.controlBtnText, { color: state.snapshot ? theme.actionBtnText : theme.actionBtnDisabledText }]}>
+                <Text style={[styles.controlBtnText, { color: state.snapshot ? theme.inlineBtnText : theme.actionBtnDisabledText }]}>
                   Restore {state.snapshot ? (state.snapshot.bestResult !== null ? `(${state.snapshot.bestResult})` : '(/)') : ''}
                 </Text>
               </TouchableOpacity>
             </View>
             <TouchableOpacity
-              style={[styles.actionBtn, { flex: 1, backgroundColor: theme.actionBtnBg, borderColor: theme.actionBtnBorder }]}
+              style={[styles.actionBtn, { flex: 1, backgroundColor: theme.inlineBtnBg, borderColor: theme.inlineBtnBorder }]}
               onPress={() => dispatch({ type: 'SP_RESET' })}
               activeOpacity={0.8}
             >
-              <Text style={[styles.controlBtnText, { color: theme.actionBtnText }]}>Clear all</Text>
+              <Text style={[styles.controlBtnText, { color: theme.inlineBtnText }]}>Clear all</Text>
             </TouchableOpacity>
           </View>
         )}

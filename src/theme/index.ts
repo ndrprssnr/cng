@@ -9,6 +9,7 @@ export interface Theme {
   resultTileBg: string;
   resultTileBorder: string;
   inlineBtnBg: string;
+  inlineBtnBorder: string;
   inlineBtnText: string;
   trashBtnBg: string;
   deleteBg: string;
@@ -64,7 +65,8 @@ export const darkTheme: Theme = {
   paperRule: '#323260',
   resultTileBg: '#263238',
   resultTileBorder: '#546e7a',
-  inlineBtnBg: '#263238',
+  inlineBtnBg: '#37474f',
+  inlineBtnBorder: '#263238',
   inlineBtnText: '#eceff1',
   trashBtnBg: '#37474f',
   deleteBg: '#b71c1c',
@@ -120,7 +122,8 @@ export const lightTheme: Theme = {
   paperRule: '#e0e0e0',
   resultTileBg: '#e0e0e0',
   resultTileBorder: '#90a4ae',
-  inlineBtnBg: '#e0e0e0',
+  inlineBtnBg: '#d0d0d0',
+  inlineBtnBorder: '#b8b8b8',
   inlineBtnText: '#1a1a2e',
   trashBtnBg: '#cfd8dc',
   deleteBg: '#b71c1c',
