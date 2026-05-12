@@ -8,16 +8,19 @@ interface Props {
   result: number;
   target: number;
   bestSolution: BestSolution | null;
+  timedOut?: boolean;
 }
 
-export default function ResultBanner({ score, result, target, bestSolution }: Props) {
+export default function ResultBanner({ score, result, target, bestSolution, timedOut }: Props) {
   const { theme } = useTheme();
   const isExact = score.label === 'exact';
   const isClose = score.label === 'close';
 
   const bannerBg = isExact ? theme.bannerExactBg : isClose ? theme.bannerCloseBg : theme.bannerOffBg;
 
-  const message = isExact
+  const message = timedOut
+    ? "Time's up! No answer submitted."
+    : isExact
     ? `Exact! You got ${target}!`
     : isClose
     ? `So close! You got ${result}, just ${score.diff} away!`

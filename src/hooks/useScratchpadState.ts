@@ -169,6 +169,7 @@ function createInitialState(gameId: number): ScratchpadState {
     score: null,
     bestSolution: null,
     snapshot: null,
+    timedOut: false,
   };
 }
 
@@ -178,7 +179,8 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
   if (state.phase === 'submitted' &&
       action.type !== 'SP_NEW_GAME' &&
       action.type !== 'SP_SOLUTION_READY' &&
-      action.type !== 'SP_SUBMIT') {
+      action.type !== 'SP_SUBMIT' &&
+      action.type !== 'SP_TIMEOUT') {
     return state;
   }
 
@@ -376,6 +378,17 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
         }
       }
       return { ...state, phase: 'submitted', score, bestSolution, snapshot: null };
+    }
+
+    case 'SP_TIMEOUT': {
+      return {
+        ...state,
+        phase: 'submitted',
+        score: { diff: state.target, label: 'off' },
+        timedOut: true,
+        bestSolution: state.precomputedSolution,
+        snapshot: null,
+      };
     }
 
     case 'SP_NEW_GAME': {

@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet } from 'react-native';
 import { useScratchpadState } from '../hooks/useScratchpadState';
 import ScratchpadScreen from './ScratchpadScreen';
 import { ThemeProvider, useTheme } from '../theme/ThemeContext';
+import { TimerSettingsProvider } from '../contexts/TimerSettingsContext';
 
 function GameScreenInner() {
   const { state, dispatch } = useScratchpadState();
@@ -22,7 +23,9 @@ function GameScreenInner() {
 export default function GameScreen() {
   return (
     <ThemeProvider>
-      <GameScreenInner />
+      <TimerSettingsProvider>
+        <GameScreenInner />
+      </TimerSettingsProvider>
     </ThemeProvider>
   );
 }

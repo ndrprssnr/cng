@@ -38,6 +38,7 @@ export interface ScratchpadState {
   score: ScoreResult | null;
   bestSolution: BestSolution | null;
   snapshot: ScratchpadSnapshot | null;
+  timedOut: boolean;
 }
 
 export type ScratchpadAction =
@@ -53,6 +54,7 @@ export type ScratchpadAction =
   | { type: 'SP_ADD_LINE' }
   | { type: 'SP_DELETE_LINE'; lineId: string }
   | { type: 'SP_SUBMIT' }
+  | { type: 'SP_TIMEOUT' }
   | { type: 'SP_NEW_GAME' }
   | { type: 'SP_SOLUTION_READY'; solution: BestSolution | null; exactSolvable: boolean }
   | { type: 'SP_SAVE_SNAPSHOT' }

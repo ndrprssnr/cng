@@ -10,11 +10,14 @@ import {
 import NumberTile from '../components/NumberTile';
 import { Operator } from '../types/game';
 import OperatorButton from '../components/OperatorButton';
-import React from 'react';
+import React, { useState } from 'react';
 import ResultBanner from '../components/ResultBanner';
 import ScratchLine from '../components/ScratchLine';
 import TargetDisplay from '../components/TargetDisplay';
+import TimerSettingsModal from '../components/TimerSettingsModal';
+import { useCountdown } from '../hooks/useCountdown';
 import { useTheme } from '../theme/ThemeContext';
+import { useTimerSettings } from '../contexts/TimerSettingsContext';
 
 interface Props {
   state: ScratchpadState;
@@ -29,11 +32,22 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
   const cursorAtStart = (activeLine?.cursorPos ?? 0) === 0;
   const cursorAtEnd = (activeLine?.cursorPos ?? 0) === (activeLine?.expression.length ?? 0);
 
+  const { settings } = useTimerSettings();
+  const hasAnyResult = state.lines.some(l => l.result !== null);
+  const { secondsRemaining } = useCountdown(settings, state.phase, state.gameId, dispatch, hasAnyResult);
+  const [timerModalVisible, setTimerModalVisible] = useState(false);
+
   return (
     <View style={styles.safe}>
       {/* Fixed header — does not scroll */}
       <View style={[styles.header, { backgroundColor: theme.headerFooterBg }]}>
-        <TargetDisplay target={state.target} exactSolvable={state.exactSolvable} />
+        <TargetDisplay
+          target={state.target}
+          exactSolvable={state.exactSolvable}
+          timerSecondsRemaining={secondsRemaining}
+          timerEnabled={settings.enabled}
+          onTimerIconPress={() => setTimerModalVisible(true)}
+        />
 
       </View>
 
@@ -85,6 +99,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
                   result={result}
                   target={state.target}
                   bestSolution={state.bestSolution}
+                  timedOut={state.timedOut}
                 />
               );
             })()
@@ -208,6 +223,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
           </TouchableOpacity>
         )}
       </View>
+      <TimerSettingsModal visible={timerModalVisible} onClose={() => setTimerModalVisible(false)} />
     </View>
   );
 }
