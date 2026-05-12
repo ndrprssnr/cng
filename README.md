@@ -2,11 +2,13 @@
 
 A mobile puzzle game inspired by the Numbers Round from the TV show *Countdown*. Built with React Native and Expo, runs on Android, iOS, and in the browser.
 
+> **Note:** The 30-second countdown timer from the TV show is not yet implemented. The game is currently played in a relaxed, untimed mode.
+
 ---
 
 ## How to Play
 
-You are given **6 numbers** — a mix of small numbers (1–10) and large numbers (25, 50, 75, 100) — and a **target** between 100 and 999.
+You are given **6 numbers** — a mix of small numbers (1–10) and large numbers (25, 50, 75, 100) — and a **target** between 101 and 999.
 
 Your goal is to combine the numbers using **addition, subtraction, multiplication, and division** to reach the target, or get as close as possible.
 
@@ -18,14 +20,20 @@ Your goal is to combine the numbers using **addition, subtraction, multiplicatio
 - Division is only allowed if it divides **exactly** (no fractions).
 - All intermediate results must be **whole non-negative numbers**.
 
+### Scratchpad
+
+The game gives you **5 expression lines** to work in. Tap any line to make it active, then build your expression using the number tiles and operator buttons. Each line shows its result on the right — completed results can be tapped and reused as inputs in other lines, letting you chain calculations across rows.
+
 ### Controls
 
-1. Tap a **number tile** to add it to your expression.
+1. Tap a **number tile** to add it to the active expression line.
 2. Tap an **operator button** (`+` `-` `×` `÷` `(` `)`) to add an operator.
-3. Use **◀ ▶** to move the cursor and insert tokens at any position.
-4. Use **⌫** to delete the token before the cursor.
-5. Use **✕** to clear the entire expression.
-6. Tap **Submit** when you are happy with your expression.
+3. Use **navigation buttons** (`◀`, `▶`) to move the cursor and insert tokens at any position.
+4. Use **`⌫`** to delete the token before the cursor.
+5. Use **`⌧`** to clear the entire active expression line.
+6. Use **Clear all** to reset all 5 expression lines at once.
+7. Use **Save** to take a snapshot of your current scratchpad state and **Restore** to return to it.
+8. Tap **Submit** when you are happy with your expressions.
 
 ### Scoring
 
@@ -39,7 +47,9 @@ After submitting, the app reveals the best possible solution (or the closest rea
 
 ### Hint
 
-A small dot above the target number gives you a subtle clue:
+A small dot on the target card gives you a subtle clue:
+
+- **Pulsing white dot** — the solver is still working.
 - **Green dot** — an exact solution exists.
 - **Soft red dot** — no exact solution is possible with these numbers.
 
@@ -191,28 +201,34 @@ When the build completes (typically 5–15 minutes), a download link for the APK
 ### Project Structure
 
 ```
-cdc/
+cng/
 ├── App.tsx                        # Entry point
 ├── app.json                       # Expo configuration (name, package, icons)
 ├── package.json
 ├── src/
-│   ├── types/game.ts              # Shared TypeScript types
+│   ├── types/
+│   │   ├── game.ts                # Shared TypeScript types
+│   │   └── scratchpad.ts          # Scratchpad state and action types
 │   ├── logic/
 │   │   ├── gameSetup.ts           # Number and target generation
 │   │   ├── expressionEngine.ts    # Shunting-yard evaluator
 │   │   ├── validation.ts          # Submission guard, scoring
 │   │   └── solver.ts              # Brute-force best-solution finder
 │   ├── hooks/
-│   │   └── useGameState.ts        # useReducer — all game state and actions
+│   │   └── useScratchpadState.ts  # useReducer — all game state and actions
 │   ├── components/
 │   │   ├── TargetDisplay.tsx
 │   │   ├── ExpressionDisplay.tsx
 │   │   ├── NumberTile.tsx
 │   │   ├── OperatorButton.tsx
-│   │   ├── ActionButtons.tsx
+│   │   ├── ScratchLine.tsx
 │   │   └── ResultBanner.tsx
-│   └── screens/
-│       └── GameScreen.tsx         # Main (and only) screen
+│   ├── screens/
+│   │   ├── GameScreen.tsx         # Root screen; mounts ScratchpadScreen
+│   │   └── ScratchpadScreen.tsx   # Full scratchpad UI
+│   └── theme/
+│       ├── index.ts               # Theme interface + dark and light theme tokens
+│       └── ThemeContext.tsx        # ThemeProvider and useTheme hook
 └── assets/
 ```
 
