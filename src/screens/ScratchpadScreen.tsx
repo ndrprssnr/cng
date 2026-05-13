@@ -33,7 +33,7 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
   const cursorAtEnd = (activeLine?.cursorPos ?? 0) === (activeLine?.expression.length ?? 0);
 
   const { settings } = useTimerSettings();
-  const hasAnyResult = state.lines.some(l => l.result !== null);
+  const hasAnyResult = state.lines.some(l => l.result !== null) || state.snapshot?.bestResult != null;
   const { secondsRemaining } = useCountdown(settings, state.phase, state.gameId, dispatch, hasAnyResult);
   const [timerModalVisible, setTimerModalVisible] = useState(false);
 
@@ -84,26 +84,13 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
 
 
           {state.phase === 'submitted' && state.score !== null && (
-            (() => {
-              const candidateLines = state.lines.filter(l => l.result !== null);
-              const bestLine = candidateLines.length > 0
-                ? candidateLines.reduce((best, l) => {
-                    const bestDiff = Math.abs((best.result as number) - state.target);
-                    const lDiff = Math.abs((l.result as number) - state.target);
-                    return lDiff < bestDiff ? l : best;
-                  })
-                : null;
-              const result = bestLine?.result ?? state.target;
-              return (
-                <ResultBanner
-                  score={state.score}
-                  result={result}
-                  target={state.target}
-                  bestSolution={state.bestSolution}
-                  timedOut={state.timedOut}
-                />
-              );
-            })()
+            <ResultBanner
+              score={state.score}
+              result={state.submittedResult ?? state.target}
+              target={state.target}
+              bestSolution={state.bestSolution}
+              timedOut={state.timedOut}
+            />
           )}
         </View>
       </ScrollView>
@@ -206,13 +193,13 @@ export default function ScratchpadScreen({ state, dispatch, onNewGame }: Props) 
             style={[
               styles.actionBtn,
               { backgroundColor: theme.actionBtnBg, borderColor: theme.actionBtnBorder },
-              !state.lines.some(l => l.result !== null) && styles.actionBtnDisabled,
+              !state.lines.some(l => l.result !== null) && state.snapshot?.bestResult == null && styles.actionBtnDisabled,
             ]}
             onPress={() => dispatch({ type: 'SP_SUBMIT' })}
-            disabled={!state.lines.some(l => l.result !== null)}
+            disabled={!state.lines.some(l => l.result !== null) && state.snapshot?.bestResult == null}
             activeOpacity={0.8}
           >
-            <Text style={[styles.submitText, { color: state.lines.some(l => l.result !== null) ? theme.actionBtnText : theme.actionBtnDisabledText }]}>Submit</Text>
+            <Text style={[styles.submitText, { color: state.lines.some(l => l.result !== null) || state.snapshot?.bestResult != null ? theme.actionBtnText : theme.actionBtnDisabledText }]}>Submit</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity

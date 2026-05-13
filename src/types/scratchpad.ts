@@ -36,6 +36,7 @@ export interface ScratchpadState {
   activeLineId: string;
   resultTiles: ResultTile[];          // one entry per line that has a non-null result
   score: ScoreResult | null;
+  submittedResult: number | null;
   bestSolution: BestSolution | null;
   snapshot: ScratchpadSnapshot | null;
   timedOut: boolean;

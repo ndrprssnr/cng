@@ -152,7 +152,7 @@ function recomputeLine(
   });
 }
 
-function createInitialState(gameId: number): ScratchpadState {
+export function createInitialState(gameId: number): ScratchpadState {
   const tiles = buildTiles();
   const target = generateTarget();
   const lines = [emptyLine(), emptyLine(), emptyLine(), emptyLine(), emptyLine()];
@@ -167,6 +167,7 @@ function createInitialState(gameId: number): ScratchpadState {
     activeLineId: lines[0].id,
     resultTiles: [],
     score: null,
+    submittedResult: null,
     bestSolution: null,
     snapshot: null,
     timedOut: false,
@@ -175,7 +176,7 @@ function createInitialState(gameId: number): ScratchpadState {
 
 // ── Reducer ───────────────────────────────────────────────────────────────────
 
-function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadState {
+export function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadState {
   if (state.phase === 'submitted' &&
       action.type !== 'SP_NEW_GAME' &&
       action.type !== 'SP_SOLUTION_READY' &&
@@ -359,25 +360,52 @@ function reducer(state: ScratchpadState, action: ScratchpadAction): ScratchpadSt
 
     case 'SP_SUBMIT': {
       const candidateLines = state.lines.filter(l => l.result !== null);
-      if (candidateLines.length === 0) return state;
-      const bestLine = candidateLines.reduce((best, l) => {
-        const bestDiff = Math.abs((best.result as number) - state.target);
-        const lDiff = Math.abs((l.result as number) - state.target);
-        return lDiff < bestDiff ? l : best;
-      });
-      const userResult = bestLine.result as number;
+      const snapshotBestResult = state.snapshot?.bestResult ?? null;
+      if (candidateLines.length === 0 && snapshotBestResult === null) return state;
+
+      // Best result from current lines
+      let currentBestResult: number | null = null;
+      if (candidateLines.length > 0) {
+        currentBestResult = candidateLines.reduce((best, l) => {
+          const bestDiff = Math.abs(best - state.target);
+          const lDiff = Math.abs((l.result as number) - state.target);
+          return lDiff < bestDiff ? (l.result as number) : best;
+        }, candidateLines[0].result as number);
+      }
+
+      // Pick whichever is closer to target
+      let userResult: number;
+      let usedTiles: typeof state.tiles;
+      if (currentBestResult === null) {
+        userResult = snapshotBestResult!;
+        usedTiles = state.snapshot!.tiles;
+      } else if (snapshotBestResult === null) {
+        userResult = currentBestResult;
+        usedTiles = state.tiles;
+      } else {
+        const currentDiff = Math.abs(currentBestResult - state.target);
+        const snapshotDiff = Math.abs(snapshotBestResult - state.target);
+        if (snapshotDiff < currentDiff) {
+          userResult = snapshotBestResult;
+          usedTiles = state.snapshot!.tiles;
+        } else {
+          userResult = currentBestResult;
+          usedTiles = state.tiles;
+        }
+      }
+
       const score = computeScore(userResult, state.target);
       const pre = state.precomputedSolution;
       let bestSolution: BestSolution | null = null;
       if (pre) {
         if (userResult === state.target && pre.result === state.target) {
-          const numCount = state.tiles.filter(t => t.used).length;
+          const numCount = usedTiles.filter(t => t.used).length;
           if (pre.numCount < numCount) bestSolution = pre;
         } else if (userResult !== state.target) {
           bestSolution = pre;
         }
       }
-      return { ...state, phase: 'submitted', score, bestSolution, snapshot: null };
+      return { ...state, phase: 'submitted', score, submittedResult: userResult, bestSolution, snapshot: null };
     }
 
     case 'SP_TIMEOUT': {
